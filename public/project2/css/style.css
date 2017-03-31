@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600');
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+html, body {
+    padding: 0;
+    margin: 0;
+    background-color: #3f2e5b;
+    font-family: 'Open Sans', sans-serif;
+}
+/* body forming blocks */
+.body_wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 50%;
+    min-width: 650px;
+    padding: 10px 0;
+    margin: 10px auto;
+    background-color: #fafafa;
+    color: #040404;
+    border-radius: 8px;
+    border: 2px solid #ffffff;
+}
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 500;
+    padding-bottom: 10px;
+    color: #3f2e5b;
+}
+.copyright {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 300;
+    padding: 5px 5% 0 5%;
+    color: #3f2e5b;
+    opacity: .5;
+}
+.menu_block {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px 5%;
+    background: linear-gradient(to right, #fafafa, #e0e0e0, #fafafa);
+    color: #040404;
+}
+.menu_block__bottom {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px 5%;
+    background: linear-gradient(to right, #fafafa, #e0e0e0, #fafafa);
+    color: #040404;
+}
+.menu_block__bottom_left, .menu_block__bottom_right {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.menu_block__bottom_left {
+    justify-content: flex-start;
+}
+.menu_block__bottom_right {
+    justify-content: flex-end;
+}
+.menu_text {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 300;
+}
+.stats {
+    align-self: center;
+    padding-left: 5px;
+}
+.bottom_radio {
+    height: 15px;
+    width: 15px;
+    margin: 0 5px;
+    align-self: center;
+    flex-shrink: 0;
+    background-color: inherit;
+    border: 1px solid #3f2e5b;
+}
+.bottom_radio:hover {
+    opacity: .7;
+    cursor: pointer;
+}
+.bottom_radio_text {
+    cursor: pointer;
+    align-self: center;
+}
+#addButton, #clearButton { /* divs as buttons */
+    display: inline-block;
+    background-color: #3f2e5b;
+    color:#fafafa;
+    text-align:center;
+    margin: 0 10px;
+    padding: 3px 10px;
+    height: 26px;
+}
+#addButton {
+    width: 70px;
+}
+#addButton:hover, #clearButton:hover {
+    cursor: pointer;
+    opacity: .7;
+}
+#items_wrap { /* wrap block for the items */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 225px;
+    padding: 5px 0;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 300;
+}
+#items_wrap .item { /* each div contains checkbox, item and remove button */
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start; /* edited */
+    align-items: center;
+    width: 100%;
+    height:30px;
+    background-color: #f5f5f5;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    padding: 3px 5%;
+}
+#items_wrap .item:hover {
+    background-color: #f1f1f1;
+}
+#items_wrap .item .checkBox {
+    height: 15px;
+    width: 15px;
+    background-color: inherit;
+    margin-right: 5px;
+    border: 1px solid #3f2e5b;
+}
+#items_wrap .item .checkBox:hover {
+    opacity: .7;
+    cursor: pointer;
+}
+.checked {
+    background-image: url("check_x15.png");
+}
+.done {
+    text-decoration: line-through;
+}
+#items_wrap .item .killItem { /* remove button [x] */
+    background-color: inherit;
+    width: 15px;
+    height: 15px;
+    background-image: url("cross_x15.png");
+    padding: 0;
+    margin-left: 10px;
+}
+#items_wrap .item .killItem:hover {
+    opacity: .7;
+    cursor: pointer;
+}
+.editItem {
+    padding: 5px 7px;
+    width: 300px;
+}
+input {
+    padding: 5px 7px;
+    width: 300px;
+}
+#nav_block {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 2px 5%;
+    background-color: inherit;
+    color: #040404;
+}
+.pageN {
+    display: flex;
+    padding: 3px;
+    margin: 0 3px;
+    background-color: #eaeaea;
+    align-self: center;
+    width: 18px;
+    justify-content: center;
+}
+.selectedN {
+    background-color: #d0d0d0;
+}
+.pageN:hover {
+    background-color: #d0d0d0;
+    cursor: pointer;
+}
+/*
+input[type="checkbox"] {
+    display:none;
+}
+input[type="checkbox"] + label span {
+    display: flex;
+    background: url(check_x15.png) no-repeat;
+    background-position: 0;
+    padding-left: 20px;
+    cursor:pointer;
+    opacity: .7;
+}
+input[type="checkbox"]:checked + label span {
+    background: url(check_x15.png) no-repeat;
+    background-position: 0;
+    opacity: 1;
+}*/
