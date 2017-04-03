@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>To Do List: part 2</title>
     <link rel="stylesheet" href="css/style.css">
-
+    <script src="scripts/jquery-3-1-1.js"></script>
+    <script src="scripts/gears.js"></script>
 </head>
 <body>
 <div class="page_container">
@@ -12,22 +13,27 @@
     <div class="head_wrap">
         <div class="head__title">TO DO LIST</div>
         <div class="head__input">
-            <input type="text" id="text" placeholder="What to do?"/>
+            <input type="text" id="text" placeholder="..."/>
             <div id="addButton">Add</div>
         </div>
     </div>
-
     <div class="body_wrap">
+        <div id="content_container">
 
+            <!-- items here -->
 
-    Tasks are right here...
-
-
+        </div>
+        <div id="nc_container">
+            <div id="navigation_block">Navigation block</div>
+            <div id="controls_block">Controls block</div>
+        </div>
     </div>
-
     <div class="foot_wrap">
-        <div class="foot__controls">Controls are right here...</div>
-        <div class="foot__credits">By <a href="#">Peter Dyumin</a>, 2017</div>
+        <div class="foot__stats">
+            <div id="pending"></div>
+            <div id="completed"></div>
+        </div>
+        <div class="foot__credits">By <a href="../">Peter Dyumin</a>, 2017</div>
     </div>
 </div>
 </body>
