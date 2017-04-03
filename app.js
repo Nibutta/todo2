@@ -5,10 +5,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var app = express();
+
 //*************************************************************************
 //*************************************************************************
+//********** DB stuff ************
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');  // DB itself
+mongoose.connect('mongodb://localhost/data');  // DB itself
 
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -16,13 +19,33 @@ db.once('open', function() {
     // we're connected!
 });
 
+// schema
+var itemSchema = mongoose.Schema({
+    id: Number
+    , value: String
+    , state: String
+
+});
+
+// model
+var itemModel = mongoose.model('itemModel', itemSchema);
+
+// item
+var item = new itemModel({id: 0, value: "value", state: "d"});
+
+//item.save(function (err, data) {
+//    if (err) return console.error(err);
+//});
+
+itemModel.find(function (err, items) {
+    if (err) return console.error(err);
+    console.log(items);
+});
 //*************************************************************************
 //*************************************************************************
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-
-var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

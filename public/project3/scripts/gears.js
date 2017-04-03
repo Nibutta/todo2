@@ -1,5 +1,4 @@
 $(document).ready(
-
     function () {
         //*****************************************************************************************
         // VARS ON STARTUP
@@ -19,29 +18,6 @@ $(document).ready(
         var pagesNumber = 1;    // number of pages on startup
         var itemsNumber = 0;    // how many items to show
 
-        //******** DB STUFF *********
-        // schema
-        var itemSchema = mongoose.Schema({
-            id: Number
-            , value: String
-            , state: String
-
-        });
-
-        // model
-        var itemModel = mongoose.model('itemModel', itemSchema);
-
-        // item
-        var item = new itemModel({id: itemID, value: itemValue, state: itemState});
-
-        item.save(function (err, item) {
-            if (err) return console.error(err);
-        });
-
-        itemModel.find(function (err, items) {
-            if (err) return console.error(err);
-
-        });
         //*****************************************************************************************
         // FUNCTIONS
         //*****************************************************************************************
