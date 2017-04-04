@@ -13,7 +13,7 @@
     <div class="head_wrap">
         <div class="head__title">TO DO LIST</div>
         <div class="head__input">
-            <input type="text" id="text" placeholder="..."/>
+            <input type="text" id="item_value" placeholder="..."/>
             <div id="addButton">Add</div>
         </div>
     </div>
@@ -24,8 +24,12 @@
 
         </div>
         <div id="nc_container">
-            <div id="navigation_block">Navigation block</div>
-            <div id="controls_block">Controls block</div>
+            <div id="navigation_block">[Pages]</div>
+            <div id="controls_block">
+                <div id="showAll" class="control_item">Show all</div>
+                <div id="showPending" class="control_item">Show pending</div>
+                <div id="showCompleted" class="control_item">Show completed</div>
+            </div>
         </div>
     </div>
     <div class="foot_wrap">
@@ -33,7 +37,8 @@
             <div id="pending"></div>
             <div id="completed"></div>
         </div>
-        <div class="foot__credits">By <a href="../">Peter Dyumin</a>, 2017</div>
+        <div id="ghost"></div>
+        <div class="foot__credits">By <a class="onBlack" href="../">Peter Dyumin</a>, 2017</div>
     </div>
 </div>
 </body>

@@ -10,7 +10,7 @@ html, body {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
 }
-a {
+a.onBlack {
     color: #eaeaff;
 }
 a:hover {
@@ -107,6 +107,19 @@ a:hover {
 }
 #navigation_block, #controls_block {
     padding: 2px 0;
+}
+#controls_block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+.control_item {
+    padding-right: 15px;
+    align-self: center;
+}
+.control_item:hover {
+    cursor: pointer;
 }
 input {
     padding: 3px 5px;

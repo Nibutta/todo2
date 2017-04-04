@@ -7,42 +7,7 @@ var bodyParser = require('body-parser');
 
 var app = express();
 
-//*************************************************************************
-//*************************************************************************
-//********** DB stuff ************
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/data');  // DB itself
-
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-    // we're connected!
-});
-
-// schema
-var itemSchema = mongoose.Schema({
-    id: Number
-    , value: String
-    , state: String
-
-});
-
-// model
-var itemModel = mongoose.model('itemModel', itemSchema);
-
-// item
-var item = new itemModel({id: 0, value: "value", state: "d"});
-
-//item.save(function (err, data) {
-//    if (err) return console.error(err);
-//});
-
-itemModel.find(function (err, items) {
-    if (err) return console.error(err);
-    console.log(items);
-});
-//*************************************************************************
-//*************************************************************************
+var db = require('./conf/db.js');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -55,12 +20,23 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// index page
 app.use('/', index);
 app.use('/users', users);
+
+var taskAPI = express.Router();
+app.use('/project3/tasks', taskAPI);
+
+taskAPI.get('/', db);
+taskAPI.get('/pending', db);
+taskAPI.get('/completed', db);
+taskAPI.post('/create', db)
+//taskAPI.post('/destroy/:id', db.destroy);
+//taskAPI.post('/edit/:id', db.edit);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

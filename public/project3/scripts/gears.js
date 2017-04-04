@@ -76,6 +76,8 @@ $(document).ready(
         }
 
 
+
+
         // "START UP" FUNCTION
         function start () {
             // show everything
@@ -94,4 +96,27 @@ $(document).ready(
         }
 
         start();
+
+        //*****************************************************************************************
+        // BUTTONS / INTERACTIONS
+        //*****************************************************************************************
+        $('#addButton').click(function () {
+            itemValue = $('#item_value').val();
+
+            // FORM POST EMULATOR 3000:
+            $('#ghost').html('<form id="fakeForm" action="/project3/tasks/create/" method="post"><input id="fakeInput" name="fake" type="hidden" value="'+ itemValue + '"></form>');
+            $('#fakeForm').submit();
+        });
+
+
+
+        $('#showAll').click(function () {
+            $('#content_container').load('/project3/tasks/');
+        });
+        $('#showPending').click(function () {
+            $('#content_container').load('/project3/tasks/pending/');
+        });
+        $('#showCompleted').click(function () {
+            $('#content_container').load('/project3/tasks/completed/');
+        });
     });
