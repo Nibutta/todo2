@@ -79,7 +79,7 @@ taskRouter.get('/clear', function(req, res, next)
         itemModel.remove({}, function (err, items)
         {
             if (err) res.send(err);
-            //res.send(items);  // send back empty array --- optional
+            res.send(items);  // send back empty array --- optional
             console.log("--> CLEARED DATABASE");
         });
     });

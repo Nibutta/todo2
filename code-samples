@@ -12,3 +12,13 @@ $.ajax({
 }).then(function(res) {
 console.log("res", res)
 });
+
+
+
+        /*
+            // FORM POST EMULATOR 3000:
+            $('#ghost').html('<form id="fakeForm" action="/project3/tasks/create/" ' +
+                'method="post"><input id="id" name="name" type="hidden" value="'+ itemValue + '"></form>');
+            $('#fakeForm').submit();
+             $('#ghost').html("");
+            */

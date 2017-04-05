@@ -37,10 +37,10 @@ a:hover {
     flex-wrap: nowrap;
 }
 .head_wrap {
-    background: linear-gradient(to bottom, #1f1f1f, #3f3f3f);
+    background: linear-gradient(to bottom, #1f1f1f, #4f4f4f);
 }
 .foot_wrap {
-    background: linear-gradient(to bottom, #3f3f3f, #1f1f1f);
+    background: linear-gradient(to bottom, #4f4f4f, #1f1f1f);
 }
 .head__title {
     text-align: left;
@@ -94,7 +94,7 @@ a:hover {
     text-align: left;
     font-size: 16px;
     font-weight: 300;
-    border: 9px double #3f3f3f;
+    border: 9px double #4f4f4f;
 }
 #content_container {
     display: flex;
@@ -154,6 +154,7 @@ input {
 #clearButton:hover {
     background-color: #eaeaff;
     cursor: pointer;
+    color: #020202;
 }
 #content_container .item {
     display: flex;
@@ -165,21 +166,29 @@ input {
     padding: 2px 0;
 }
 #content_container .item:hover {
-    background-color: #f0f0f0;
+    background-color: #f8f8f8;
 }
 #content_container .item .checkbox {
     align-self: center;
+    background-color: #00ffbc;
+    height: 20px;
+    width: 20px;
 }
 #content_container .item .checkbox:hover {
-
+    opacity: 0.7;
+    cursor: pointer;
 }
 #content_container .item .content {
     align-self: center;
+    padding: 0 7px;
 }
 #content_container .item .remove_item {
-    background-color: inherit;
+    background-color: #ff0071;
     align-self: center;
+    height: 20px;
+    width: 20px;
 }
 #content_container .item .remove_item:hover {
-
+    opacity: 0.7;
+    cursor: pointer;
 }
