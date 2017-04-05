@@ -1,0 +1,14 @@
+$.ajax({
+   url: "tasks/create",
+method: "POST",
+  data: { id: itemID, state: itemState, value: itemValue }
+}).then(function(res) {
+console.log("res", res)
+})
+
+
+$.ajax({
+  url: "tasks/",
+}).then(function(res) {
+console.log("res", res)
+});

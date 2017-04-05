@@ -24,48 +24,64 @@ var item = new itemModel({id: 0, value: "some text", state: "d"});
 //    if (err) return console.error(err);
 //});
 
-
-// query all the items and print them in console
-//itemModel.find(function (err, items) {
-//    if (err) return console.error(err);
-//    console.log("-> ITEMS:" + items);
-//});
-
 var express = require('express');
 var taskRouter = express.Router();
 
-/* GET users listing. */
-taskRouter.post('/create', function(req, res, next) {
-    res.json(req.body);
-    item.value = req.params('fake');
-    item.id = 1;
-    item.state = "p";
-    item.save();
-    console.log("--> CREATED NEW ITEM");
+//******************************************************************
+// SEND ALL ITEMS
+taskRouter.get('/', function(req, res, next)
+    {
+        itemModel.find({}, function (err, items)
+        {
+            if (err) res.send(err);
+            res.send(items);
+            console.log("--> SEND ITEMS (ALL)");
+        });
+    });
+//******************************************************************
+// SEND PENDING ITEMS
+taskRouter.get('/pending', function(req, res, next)
+    {
+        itemModel.find({state: "p"}, function (err, items)
+        {
+            if (err) res.send(err);
+            res.send(items);
+            console.log("--> SEND ITEMS (PENDING)");
+        });
+    });
+//******************************************************************
+// SEND COMPLETED ITEMS
+taskRouter.get('/completed', function(req, res, next)
+    {
+        itemModel.find({state: "d"}, function (err, items)
+        {
+            if (err) res.send(err);
+            res.send(items);
+            console.log("--> SEND ITEMS (COMPLETED)");
+        });
+    });
+//******************************************************************
+// CREATE NEW ITEM
+taskRouter.post('/create', function(req, res, next)
+    {
+        var item = new itemModel(req.body);
+
+        item.save(function(saved_item)
+        {
+            res.send(saved_item);
+            console.log("--> CREATED NEW ITEM");
+        });
+    });
+//******************************************************************
+// CLEAR DATABASE
+taskRouter.get('/clear', function(req, res, next)
+    {
+        itemModel.remove({}, function (err, items)
+        {
+            if (err) res.send(err);
+            //res.send(items);  // send back empty array --- optional
+            console.log("--> CLEARED DATABASE");
+        });
     });
 
-
-taskRouter.get('/', function(req, res, next) {
-    itemModel.find({}, function (err, items) {
-        if (err) res.send(err);
-        res.send(items);
-        console.log("--> SHOW ITEMS (ALL)");
-    });
-});
-
-taskRouter.get('/pending', function(req, res, next) {
-    itemModel.find({state: "p"}, function (err, items) {
-        if (err) res.send(err);
-        res.send(items);
-        console.log("--> SHOW ITEMS (PENDING)");
-    });
-});
-
-taskRouter.get('/completed', function(req, res, next) {
-    itemModel.find({state: "d"}, function (err, items) {
-        if (err) res.send(err);
-        res.send(items);
-        console.log("--> SHOW ITEMS (COMPLETED)");
-    });
-});
 module.exports = taskRouter;

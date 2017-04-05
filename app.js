@@ -34,7 +34,8 @@ app.use('/project3/tasks', taskAPI);
 taskAPI.get('/', db);
 taskAPI.get('/pending', db);
 taskAPI.get('/completed', db);
-taskAPI.post('/create', db)
+taskAPI.post('/create', db);
+taskAPI.get('/clear', db);
 //taskAPI.post('/destroy/:id', db.destroy);
 //taskAPI.post('/edit/:id', db.edit);
 

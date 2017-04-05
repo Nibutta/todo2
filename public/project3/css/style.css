@@ -142,6 +142,19 @@ input {
     background-color: #eaeaff;
     cursor: pointer;
 }
+#clearButton {
+    text-align: center;
+    align-self: center;
+    height: 23px;
+    width: 80px;
+    background-color: #020202;
+    color: #fcfcfc;
+    flex-shrink: 0;
+}
+#clearButton:hover {
+    background-color: #eaeaff;
+    cursor: pointer;
+}
 #content_container .item {
     display: flex;
     flex-direction: row;
