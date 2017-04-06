@@ -36,30 +36,41 @@ $(document).ready(
             whatToShow = 0;
             // clear html
             $('#content_container').html("");
-
+            // count how many items are drawn
+            var counter = 0;
+            // how many items to show?
+            itemsNumber = pend + done;
+            // how many pages?
+            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
             if (responseArray.length === 0)
             {
                 $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
             }
             else
             {
-                responseArray.forEach(function (item)
+                // show itemsPerPage items on a page, depending on the selected page
+                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < responseArray.length; i++)  // [*FOR*]
                 {
-                    if (item.state === "p")
+                    if (counter < itemsPerPage)
                     {
-                        $('#content_container').append('<div class="item" id="' + item.id
-                            + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                            + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                            + '"></div></div>');
+                        if (responseArray[i].state === "p")
+                        {
+                            $('#content_container').append('<div class="item" id="' + responseArray[i].id
+                                + '"><div class="checkbox" id="' + responseArray[i].id + '"></div><div class="content" id="'
+                                + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                                + responseArray[i].id + '"></div></div>');
+                            counter++;
+                        }
+                        else
+                        {
+                            $('#content_container').append('<div class="item done" id="' + responseArray[i].id
+                                + '"><div class="checkbox checked" id="' + responseArray[i].id + '"></div><div class="content" id="'
+                                + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                                + responseArray[i].id + '"></div></div>');
+                            counter++;
+                        }
                     }
-                    else
-                    {
-                        $('#content_container').append('<div class="item done" id="' + item.id
-                            + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
-                            + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                            + '"></div></div>');
-                    }
-                });
+                }
                 // show stats
                 stats();
             }
@@ -167,6 +178,7 @@ $(document).ready(
                 default:
                     alert("Something's wrong... I can feel it!")
             }
+            navigation();
         }
 
 
@@ -327,6 +339,7 @@ $(document).ready(
             // clear array (just in case...)
             responseArray = [];
             // show stats
+            navigation();
             stats();
         }
 
@@ -364,6 +377,62 @@ $(document).ready(
 
 
 
+
+
+
+
+        // "PAGINATION" FUNCTION (ON PAGE NUMBER CLICK)
+        function pagination ()
+        {
+            // get ID of the selected page
+            selectedPage = $(this).attr('id');
+
+            draw();
+        }
+        // "NAVIGATION" FUNCTION (SHOWS NAVIGATION PANEL)
+        function navigation () {
+
+            // re-count items / pages in case of deletion / status change
+            switch (whatToShow)
+            {
+                case 0:
+                    itemsNumber = pend + done;
+                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                    break;
+                case 1:
+                    itemsNumber = pend;
+                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                    break;
+                case 2:
+                    itemsNumber = done;
+                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                    break;
+                default:
+                    alert("Something's wrong... I can feel it!")
+            }
+            if (pagesNumber < 1)
+            {
+                pagesNumber = 1;
+                $('#navigation_block').html('<div class="pageN" id="1">' + pagesNumber + '</div>');
+            }
+            else
+            {
+                $('#navigation_block').html("");
+                for (var i = 1; i <= pagesNumber; i++)
+                {
+                    $('#navigation_block').append('<div class="pageN" id="' + i + '">' + i + '</div>');
+                }
+            }
+            $('#navigation_block > div.pageN').removeClass('selectedN');
+            $('#navigation_block').find('div').eq(selectedPage - 1).addClass('selectedN');
+        }
+
+
+
+
+
+
+
         // "START UP" FUNCTION
         function start () {
             // show mode: all
@@ -382,7 +451,6 @@ $(document).ready(
                 if (responseArray.length === 0)
                 {
                     $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
-                    stats();
                 }
                 else
                 {
@@ -409,12 +477,13 @@ $(document).ready(
                         }
                     });
                     // show stats
-                    stats();
                 }
             });
             $('#showAll').addClass('control_selected');
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').removeClass('control_selected');
+            navigation();
+            stats();
         }
 
         start();
@@ -443,6 +512,9 @@ $(document).ready(
 
         // clear all items (entries)
         $('#clearButton').click(clearAll);
+
+        // page number click
+        $('#navigation_block').on('click', '.pageN', pagination);
 
         // state change
         $('#content_container').on('click', '.item > .checkbox', changeStatus);
