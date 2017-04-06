@@ -90,6 +90,12 @@ $(document).ready(
             $('#content_container').html("");
             // this array is used to store items with the right status
             var foundItemsArray = [];
+            // count how many items are drawn
+            var counter = 0;
+            // how many items to show?
+            itemsNumber = pend;
+            // how many pages?
+            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
             // get items with the right status
             responseArray.forEach(function (item)
             {
@@ -104,13 +110,18 @@ $(document).ready(
             }
             else
             {
-                foundItemsArray.forEach(function (item)
+                // show itemsPerPage items on a page, depending on the selected page
+                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
                 {
-                    $('#content_container').append('<div class="item" id="' + item.id
-                        + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                        + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                        + '"></div></div>');
-                });
+                    if (counter < itemsPerPage)
+                    {
+                        $('#content_container').append('<div class="item" id="' + foundItemsArray[i].id
+                            + '"><div class="checkbox" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
+                            + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
+                            + foundItemsArray[i].id + '"></div></div>');
+                        counter++;
+                    }
+                }
                 // show stats
                 stats();
             }
@@ -130,6 +141,12 @@ $(document).ready(
             $('#content_container').html("");
             // this array is used to store items with the right status
             var foundItemsArray = [];
+            // count how many items are drawn
+            var counter = 0;
+            // how many items to show?
+            itemsNumber = pend;
+            // how many pages?
+            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
             // get items with the right status
             responseArray.forEach(function (item)
             {
@@ -144,13 +161,18 @@ $(document).ready(
             }
             else
             {
-                foundItemsArray.forEach(function (item)
+                // show itemsPerPage items on a page, depending on the selected page
+                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
                 {
-                    $('#content_container').append('<div class="item done" id="' + item.id
-                        + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
-                        + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                        + '"></div></div>');
-                });
+                    if (counter < itemsPerPage)
+                    {
+                        $('#content_container').append('<div class="item" id="' + foundItemsArray[i].id
+                            + '"><div class="checkbox" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
+                            + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
+                            + foundItemsArray[i].id + '"></div></div>');
+                        counter++;
+                    }
+                }
                 // show stats
                 stats();
             }
