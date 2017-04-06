@@ -121,6 +121,9 @@ a:hover {
 .control_item:hover {
     cursor: pointer;
 }
+.control_selected {
+    color: darkorange;
+}
 input {
     padding: 3px 5px;
     height: 23px;
@@ -165,14 +168,20 @@ input {
     margin: 2px 0;
     padding: 2px 0;
 }
+.done {
+    text-decoration: line-through;
+}
 #content_container .item:hover {
     background-color: #f8f8f8;
 }
 #content_container .item .checkbox {
     align-self: center;
-    background-color: #00ffbc;
+    background-color: #ff4000;
     height: 20px;
     width: 20px;
+}
+.checkbox_checked {
+    background-color: #00ffbc;
 }
 #content_container .item .checkbox:hover {
     opacity: 0.7;
@@ -183,7 +192,7 @@ input {
     padding: 0 7px;
 }
 #content_container .item .remove_item {
-    background-color: #ff0071;
+    background-color: #8d003e;
     align-self: center;
     height: 20px;
     width: 20px;

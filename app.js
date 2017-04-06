@@ -36,7 +36,9 @@ taskAPI.get('/pending', db);
 taskAPI.get('/completed', db);
 taskAPI.post('/create', db);
 taskAPI.get('/clear', db);
-//taskAPI.post('/destroy/:id', db.destroy);
+taskAPI.post('/update', db);
+taskAPI.post('/delete', db);
+taskAPI.post('/edit', db);
 //taskAPI.post('/edit/:id', db.edit);
 
 // catch 404 and forward to error handler
