@@ -32,8 +32,6 @@ var taskAPI = express.Router();
 app.use('/project3/tasks', taskAPI);
 
 taskAPI.get('/', db);
-taskAPI.get('/pending', db);
-taskAPI.get('/completed', db);
 taskAPI.post('/create', db);
 taskAPI.get('/clear', db);
 taskAPI.post('/update', db);

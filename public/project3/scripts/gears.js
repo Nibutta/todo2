@@ -13,7 +13,7 @@ $(document).ready(
         var pend = 0;           // pending tasks
         var whatToShow = 0;     // what to show -> show status: 0 = all, 1 = pending, 2 = done
 
-        var itemsPerPage = 3;   // number of items on page
+        var itemsPerPage = 5;   // number of items on page
         var selectedPage = 1;   // selected page
         var pagesNumber = 1;    // number of pages on startup
         var itemsNumber = 0;    // how many items to show
@@ -36,45 +36,33 @@ $(document).ready(
             whatToShow = 0;
             // clear html
             $('#content_container').html("");
-            // clear array
-            responseArray = [];
-            // send "GET" to DB, receive array of objects and save it to the local array
-            $.ajax({
-                url: "tasks/",
-                method: "GET"
-            }).then(function (res) {
-                console.log("res", res);
-                // write response to the array
-                responseArray = res;
-                if (responseArray.length === 0)
+
+            if (responseArray.length === 0)
+            {
+                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+            }
+            else
+            {
+                responseArray.forEach(function (item)
                 {
-                    $('#content_container').html('Nothing to show...');
-                }
-                else
-                {
-                    responseArray.forEach(function (item)
+                    if (item.state === "p")
                     {
-                        if (item.state === "p")
-                        {
-                            // draw this shi--
-                            $('#content_container').append('<div class="item" id="' + item.id
-                                + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                                + item.id + '">ID: ' + item.id + ' VALUE: ' + item.value + ' STATE: ' + item.state
-                                + '</div><div class="remove_item" id="' + item.id + '"></div></div>');
-                        }
-                        else
-                        {
-                            $('#content_container').append('<div class="item done" id="' + item.id
-                                + '"><div class="checkbox checkbox_checked" id="' + item.id
-                                + '"></div><div class="content" id="' + item.id + '">ID: ' + item.id + ' VALUE: '
-                                + item.value + ' STATE: ' + item.state + '</div><div class="remove_item" id="' + item.id
-                                + '"></div></div>');
-                        }
-                    });
-                    // show stats
-                    stats();
-                }
-            });
+                        $('#content_container').append('<div class="item" id="' + item.id
+                            + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
+                            + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
+                            + '"></div></div>');
+                    }
+                    else
+                    {
+                        $('#content_container').append('<div class="item done" id="' + item.id
+                            + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
+                            + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
+                            + '"></div></div>');
+                    }
+                });
+                // show stats
+                stats();
+            }
             $('#showAll').addClass('control_selected');
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').removeClass('control_selected');
@@ -89,33 +77,32 @@ $(document).ready(
             whatToShow = 1;
             // clear html
             $('#content_container').html("");
-            // clear array
-            responseArray = [];
-            // send "GET" to DB, receive array of objects and save it to the local array
-            $.ajax({
-                url: "tasks/pending",
-                method: "GET"
-            }).then(function (res) {
-                console.log("res", res);
-                responseArray = res;
-                pend = responseArray.length;
-                if (responseArray.length === 0)
+            // this array is used to store items with the right status
+            var foundItemsArray = [];
+            // get items with the right status
+            responseArray.forEach(function (item)
+            {
+                if (item.state === "p")
                 {
-                    $('#content_container').html('Nothing to show...');
-                }
-                else
-                {
-                    responseArray.forEach(function (item)
-                    {
-                        $('#content_container').append('<div class="item" id="' + item.id
-                            + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                            + item.id + '">ID: ' + item.id + ' VALUE: ' + item.value + ' STATE: ' + item.state
-                            + '</div><div class="remove_item" id="' + item.id + '"></div></div>');
-                    });
-                    // show stats
-                    stats();
+                    foundItemsArray.push(item);
                 }
             });
+            if (foundItemsArray.length === 0)
+            {
+                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+            }
+            else
+            {
+                foundItemsArray.forEach(function (item)
+                {
+                    $('#content_container').append('<div class="item" id="' + item.id
+                        + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
+                        + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
+                        + '"></div></div>');
+                });
+                // show stats
+                stats();
+            }
             $('#showAll').removeClass('control_selected');
             $('#showPending').addClass('control_selected');
             $('#showCompleted').removeClass('control_selected');
@@ -123,44 +110,63 @@ $(document).ready(
 
 
 
-        // "GET COMPLETED ITEMS" FUNCTION
+        // "SHOW COMPLETED ITEMS" FUNCTION
         function showCompleted ()
         {
             // show completed
             whatToShow = 2;
             // clear html
             $('#content_container').html("");
-            // clear array
-            responseArray = [];
-            // send "GET" to DB, receive array of objects and save it to the local array
-            $.ajax({
-                url: "tasks/completed",
-                method: "GET"
-            }).then(function (res) {
-                console.log("res", res);
-                responseArray = res;
-                done = responseArray.length;
-                if (responseArray.length === 0)
+            // this array is used to store items with the right status
+            var foundItemsArray = [];
+            // get items with the right status
+            responseArray.forEach(function (item)
+            {
+                if (item.state === "d")
                 {
-                    $('#content_container').html('Nothing to show...');
-                }
-                else
-                {
-                    responseArray.forEach(function (item)
-                    {
-                        $('#content_container').append('<div class="item done" id="' + item.id
-                            + '"><div class="checkbox checkbox_checked" id="' + item.id
-                            + '"></div><div class="content" id="' + item.id + '">ID: ' + item.id + ' VALUE: '
-                            + item.value + ' STATE: ' + item.state + '</div><div class="remove_item" id="' + item.id
-                            + '"></div></div>');
-                    });
-                    // show stats
-                    stats();
+                    foundItemsArray.push(item);
                 }
             });
+            if (foundItemsArray.length === 0)
+            {
+                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+            }
+            else
+            {
+                foundItemsArray.forEach(function (item)
+                {
+                    $('#content_container').append('<div class="item done" id="' + item.id
+                        + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
+                        + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
+                        + '"></div></div>');
+                });
+                // show stats
+                stats();
+            }
             $('#showAll').removeClass('control_selected');
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').addClass('control_selected');
+        }
+
+
+
+        // "DRAW" FUNCTION: DRAW ITEMS DEPENDING ON WHAT TO DRAW
+        function draw ()
+        {
+            switch (whatToShow)
+            {
+                case 0:
+                    showAll();
+                    break;
+                case 1:
+                    showPending();
+                    break;
+                case 2:
+                    showCompleted();
+                    break;
+                default:
+                    alert("Something's wrong... I can feel it!")
+            }
         }
 
 
@@ -177,31 +183,33 @@ $(document).ready(
                 {
                     if (item.state === "d")
                     {
+                        item.state = "p";
                         newState = "p";
                         $(this).parent('div').removeClass('done');
-                        $(this).removeClass('checkbox_checked');
-                        /*pend++;
-                        done--;*/
+                        $(this).removeClass('checked');
+                        pend++;
+                        done--;
                         // remove from html if show status is wrong
                         if (whatToShow === 2)
                         {
-                            //$(this).parent('div').remove();
-                            showCompleted();
+                            $(this).parent('div').remove();
                         }
+                        draw();
                     }
                     else
                     {
+                        item.state = "d";
                         newState = "d";
                         $(this).parent('div').addClass('done');
-                        $(this).addClass('checkbox_checked');
-                        /*pend--;
-                        done++;*/
+                        $(this).addClass('checked');
+                        pend--;
+                        done++;
                         // remove from html if show status is wrong
                         if (whatToShow === 1)
                         {
-                            //$(this).parent('div').remove();
-                            showPending();
+                            $(this).parent('div').remove();
                         }
+                        draw();
                     }
                 }
             });
@@ -220,6 +228,50 @@ $(document).ready(
 
 
 
+        // "EDIT ITEM" FUNCTION
+        function editValue ()
+        {
+            var thisData = $(this).html(), $el = $('<input type="text" class="editItem"/>');
+            $(this).replaceWith($el);
+            $el.val(thisData).focus();
+        }
+        // "APPLY NEW VALUE" FUNCTION, WORKS WHILE "EDIT ITEM" IS ACTIVE [***]
+        function applyValue (e)
+        {
+            var newValue = "";
+            // if ENTER is pressed
+            if (e.keyCode === 13)
+            {
+                if ($(this).val() !== "")
+                {
+                    //get ID of the selected item
+                    var selectedID = $(this).parent('div').attr('id');
+                    // changing html
+                    $(this).replaceWith($('<div class="content" id="' + selectedID + '">' + $(this).val() + '</div>'));
+                    newValue = $(this).val();
+                    // applying new value to the array
+                    responseArray.forEach(function (item, i)
+                    {
+                        if (item.id === +selectedID)
+                        {
+                            responseArray[i].value = newValue;
+                        }
+                    });
+                    // update database
+                    $.ajax({
+                        url     : "tasks/edit",
+                        method  : "POST",
+                        data    : { id: selectedID, value: newValue }
+                    }).then(function(res)
+                    {
+                        console.log("res", res)
+                    });
+                }
+            }
+        }
+
+
+
         // "REMOVE ITEM" FUNCTION
         function killItem ()
         {
@@ -232,10 +284,12 @@ $(document).ready(
                     if (item.state === "p")
                     {
                         pend--;
+                        responseArray.splice(i, 1);
                     }
                     if (item.state === "d")
                     {
                         done--;
+                        responseArray.splice(i, 1);
                     }
                 }
             });
@@ -249,7 +303,8 @@ $(document).ready(
                 console.log("res", res)
             });
             // remove from html
-            $(this).parent('div').remove();
+            //$(this).parent('div').remove();
+            draw();
             // show stats
             stats();
         }
@@ -259,7 +314,7 @@ $(document).ready(
         // "CLEAR ALL" FUNCTION
         function clearAll ()
         {
-            $('#content_container').html('All cleared!');
+            $('#content_container').html('<div class="message"><div class="mt">All cleared!</div></div>');
             $.ajax({
                 url     : "tasks/clear",
                 method  : "GET"
@@ -284,6 +339,11 @@ $(document).ready(
             {
                 itemValue = $('#item_value').val();
 
+                var task = {id: itemID, state: itemState, value: itemValue};
+
+                // push item to the array of objects
+                responseArray.push(task);
+
                 // send item to the ARC
                 $.ajax({
                     url: "tasks/create",
@@ -293,7 +353,7 @@ $(document).ready(
                     console.log("res", res)
                 });
 
-                showAll();
+                draw();
 
                 $('#item_value').val("").focus();
                 itemID++;
@@ -311,8 +371,6 @@ $(document).ready(
             selectedPage = 1;
             // clear html
             $('#content_container').html("");
-            // clear array
-            responseArray = [];
             // send "GET" to DB, receive array of objects and save it to the local array
             $.ajax({
                 url: "tasks/",
@@ -323,7 +381,7 @@ $(document).ready(
                 responseArray = res;
                 if (responseArray.length === 0)
                 {
-                    $('#content_container').html('Nothing to show...');
+                    $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
                     stats();
                 }
                 else
@@ -337,16 +395,15 @@ $(document).ready(
                             // draw this shi--
                             $('#content_container').append('<div class="item" id="' + item.id
                                 + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                                + item.id + '">ID: ' + item.id + ' VALUE: ' + item.value + ' STATE: ' + item.state
-                                + '</div><div class="remove_item" id="' + item.id + '"></div></div>');
+                                + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
+                                + '"></div></div>');
                             pend++;
                         }
                         else
                         {
                             $('#content_container').append('<div class="item done" id="' + item.id
-                                + '"><div class="checkbox checkbox_checked" id="' + item.id
-                                + '"></div><div class="content" id="' + item.id + '">ID: ' + item.id + ' VALUE: '
-                                + item.value + ' STATE: ' + item.state + '</div><div class="remove_item" id="' + item.id
+                                + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
+                                + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
                                 + '"></div></div>');
                             done++;
                         }
@@ -389,6 +446,12 @@ $(document).ready(
 
         // state change
         $('#content_container').on('click', '.item > .checkbox', changeStatus);
+
+        // edit item value
+        $('#content_container').on('click', '.item > .content', editValue);
+
+        // apply item value changes on ENTER
+        $('#content_container').on('keydown', '.item > .editItem', applyValue);
 
         // remove item
         $('#content_container').on('click', '.item > .remove_item', killItem);

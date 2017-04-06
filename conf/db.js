@@ -39,28 +39,6 @@ taskRouter.get('/', function(req, res, next)
         });
     });
 //******************************************************************
-// SEND PENDING ITEMS
-taskRouter.get('/pending', function(req, res, next)
-    {
-        itemModel.find({state: "p"}, function (err, items)
-        {
-            if (err) res.send(err);
-            res.send(items);
-            console.log("--> SEND ITEMS (PENDING)");
-        });
-    });
-//******************************************************************
-// SEND COMPLETED ITEMS
-taskRouter.get('/completed', function(req, res, next)
-    {
-        itemModel.find({state: "d"}, function (err, items)
-        {
-            if (err) res.send(err);
-            res.send(items);
-            console.log("--> SEND ITEMS (COMPLETED)");
-        });
-    });
-//******************************************************************
 // CREATE NEW ITEM
 taskRouter.post('/create', function(req, res, next)
     {
@@ -76,7 +54,6 @@ taskRouter.post('/create', function(req, res, next)
 // UPDATE ITEM STATUS
 taskRouter.post('/update', function(req, res, next)
 {
-    //var item = new itemModel(req.body);
     itemModel.findOneAndUpdate({id: req.body.id}, {state: req.body.state}, function(upd_item)
     {
         res.send(upd_item);
@@ -98,12 +75,11 @@ taskRouter.post('/delete', function(req, res, next)
 // EDIT ITEM VALUE
 taskRouter.post('/edit', function(req, res, next)
 {
-    var item = new itemModel(req.body);
-    var selected = req.body.id;
-    item.findOneAndUpdate({id: selected}, function(upd_item)
+    itemModel.findOneAndUpdate({id: req.body.id}, {value: req.body.value}, function(edit_item)
     {
-        res.send(upd_item);
-        console.log("--> ITEM EDITED");
+        res.send(edit_item);
+        console.log("--> ITEM VALUE UPDATED, ID: ", req.body.id);
+        console.log("                 NEW VALUE: ", req.body.value);
     });
 });
 //******************************************************************
