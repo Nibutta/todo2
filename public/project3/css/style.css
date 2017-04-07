@@ -23,7 +23,7 @@ a:hover {
     flex-direction: column;
     flex-wrap: nowrap;
     background-color: #ffffff;
-    margin-top: 15px;
+    margin: 15px 0;
 }
 .head_wrap, .foot_wrap {
     display: flex;
@@ -147,7 +147,9 @@ input {
     text-align: center;
     align-self: center;
     height: 25px;
-    width: 50px;
+    width: 80px;
+    font-size: 16px;
+    font-weight: 300;
     border-radius: 4px;
     border: 1px solid #fcfcfc;
     background-color: #373737;
@@ -201,16 +203,17 @@ input {
     text-decoration: line-through;
 }
 #content_container .item:hover {
-    background-color: #f8f8f8;
+    background: linear-gradient(to bottom right, #f4f4f4, #fefefe);
 }
 #content_container .item .checkbox {
     align-self: center;
-    background-color: #ff4000;
+    background-image: url("check_x20.png");
+    opacity: .4;
     height: 20px;
     width: 20px;
 }
 #content_container .item .checkbox:hover {
-    opacity: 0.7;
+    opacity: 1;
     cursor: pointer;
 }
 .checked {
@@ -218,19 +221,22 @@ input {
     align-self: center;
     height: 20px;
     width: 20px;
+    border-radius: 50%;
+    opacity: .4;
 }
 #content_container .item .content {
     align-self: center;
     padding: 0 7px;
 }
 #content_container .item .remove_item {
-    background-color: #8d003e;
+    background-image: url("cross_x20.png");
     align-self: center;
+    opacity: .4;
     height: 20px;
     width: 20px;
 }
 #content_container .item .remove_item:hover {
-    opacity: 0.7;
+    opacity: 1;
     cursor: pointer;
 }
 #navigation_block {

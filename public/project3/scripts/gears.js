@@ -34,46 +34,9 @@ $(document).ready(
         {
             // show everything
             whatToShow = 0;
-            // clear html
-            $('#content_container').html("");
-            // count how many items are drawn
-            var counter = 0;
-            // how many items to show?
-            itemsNumber = pend + done;
-            // how many pages?
-            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
-            if (responseArray.length === 0)
-            {
-                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
-            }
-            else
-            {
-                // show itemsPerPage items on a page, depending on the selected page
-                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < responseArray.length; i++)  // [*FOR*]
-                {
-                    if (counter < itemsPerPage)
-                    {
-                        if (responseArray[i].state === "p")
-                        {
-                            $('#content_container').append('<div class="item" id="' + responseArray[i].id
-                                + '"><div class="checkbox" id="' + responseArray[i].id + '"></div><div class="content" id="'
-                                + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                                + responseArray[i].id + '"></div></div>');
-                            counter++;
-                        }
-                        else
-                        {
-                            $('#content_container').append('<div class="item done" id="' + responseArray[i].id
-                                + '"><div class="checkbox checked" id="' + responseArray[i].id + '"></div><div class="content" id="'
-                                + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                                + responseArray[i].id + '"></div></div>');
-                            counter++;
-                        }
-                    }
-                }
-                // show stats
-                stats();
-            }
+            // select page 1
+            selectedPage = 1;
+            draw();
             $('#showAll').addClass('control_selected');
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').removeClass('control_selected');
@@ -86,45 +49,9 @@ $(document).ready(
         {
             // show pending
             whatToShow = 1;
-            // clear html
-            $('#content_container').html("");
-            // this array is used to store items with the right status
-            var foundItemsArray = [];
-            // count how many items are drawn
-            var counter = 0;
-            // how many items to show?
-            itemsNumber = pend;
-            // how many pages?
-            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
-            // get items with the right status
-            responseArray.forEach(function (item)
-            {
-                if (item.state === "p")
-                {
-                    foundItemsArray.push(item);
-                }
-            });
-            if (foundItemsArray.length === 0)
-            {
-                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
-            }
-            else
-            {
-                // show itemsPerPage items on a page, depending on the selected page
-                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
-                {
-                    if (counter < itemsPerPage)
-                    {
-                        $('#content_container').append('<div class="item" id="' + foundItemsArray[i].id
-                            + '"><div class="checkbox" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
-                            + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
-                            + foundItemsArray[i].id + '"></div></div>');
-                        counter++;
-                    }
-                }
-                // show stats
-                stats();
-            }
+            // select page 1
+            selectedPage = 1;
+            draw();
             $('#showAll').removeClass('control_selected');
             $('#showPending').addClass('control_selected');
             $('#showCompleted').removeClass('control_selected');
@@ -135,47 +62,11 @@ $(document).ready(
         // "SHOW COMPLETED ITEMS" FUNCTION
         function showCompleted ()
         {
-            // show completed
+            // show completed items
             whatToShow = 2;
-            // clear html
-            $('#content_container').html("");
-            // this array is used to store items with the right status
-            var foundItemsArray = [];
-            // count how many items are drawn
-            var counter = 0;
-            // how many items to show?
-            itemsNumber = pend;
-            // how many pages?
-            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
-            // get items with the right status
-            responseArray.forEach(function (item)
-            {
-                if (item.state === "d")
-                {
-                    foundItemsArray.push(item);
-                }
-            });
-            if (foundItemsArray.length === 0)
-            {
-                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
-            }
-            else
-            {
-                // show itemsPerPage items on a page, depending on the selected page
-                for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
-                {
-                    if (counter < itemsPerPage)
-                    {
-                        $('#content_container').append('<div class="item" id="' + foundItemsArray[i].id
-                            + '"><div class="checkbox" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
-                            + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
-                            + foundItemsArray[i].id + '"></div></div>');
-                        counter++;
-                    }
-                }
-                // show stats
-                stats();
-            }
+            // select page 1
+            selectedPage = 1;
+            draw();
             $('#showAll').removeClass('control_selected');
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').addClass('control_selected');
@@ -186,22 +77,150 @@ $(document).ready(
         // "DRAW" FUNCTION: DRAW ITEMS DEPENDING ON WHAT TO DRAW
         function draw ()
         {
-            switch (whatToShow)
+            // clear html
+            $('#content_container').html("");
+
+            // this array is used to store items with the right status
+            var foundItemsArray = [];
+
+            // count how many items are drawn
+            var counter = 0;
+
+            // show all items
+            if (whatToShow === 0)
             {
-                case 0:
-                    showAll();
-                    break;
-                case 1:
-                    showPending();
-                    break;
-                case 2:
-                    showCompleted();
-                    break;
-                default:
-                    alert("Something's wrong... I can feel it!")
+                // how many items to show?
+                itemsNumber = responseArray.length;
+                // how many pages?
+                pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                // show
+                if (responseArray.length === 0)
+                {
+                    $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+                }
+                else
+                {
+                    // show itemsPerPage items on a page, depending on the selected page
+                    for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < responseArray.length; i++)  // [*FOR*]
+                    {
+                        if (counter < itemsPerPage)
+                        {
+                            if (responseArray[i].state === "p")
+                            {
+                                $('#content_container').append('<div class="item" id="' + responseArray[i].id
+                                    + '"><div class="checkbox" id="' + responseArray[i].id + '"></div><div class="content" id="'
+                                    + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                                    + responseArray[i].id + '"></div></div>');
+                                counter++;
+                            }
+                            else
+                            {
+                                $('#content_container').append('<div class="item done" id="' + responseArray[i].id
+                                    + '"><div class="checkbox checked" id="' + responseArray[i].id + '"></div><div class="content" id="'
+                                    + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                                    + responseArray[i].id + '"></div></div>');
+                                counter++;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+            // show pending items
+            if (whatToShow === 1)
+            {
+                // get items with the right status
+                responseArray.forEach(function (item)
+                {
+                    if (item.state === "p")
+                    {
+                        foundItemsArray.push(item);
+                    }
+                });
+                // how many items to show?
+                itemsNumber = foundItemsArray.length;
+                // just in case...
+                pend = foundItemsArray.length;
+                // how many pages?
+                pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                // show
+                if (foundItemsArray.length === 0)
+                {
+                    $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+                }
+                else
+                {
+                    // show itemsPerPage items on a page, depending on the selected page
+                    for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
+                    {
+                        if (counter < itemsPerPage)
+                        {
+                            $('#content_container').append('<div class="item" id="' + foundItemsArray[i].id
+                                + '"><div class="checkbox" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
+                                + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
+                                + foundItemsArray[i].id + '"></div></div>');
+                            counter++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // show completed items
+            if (whatToShow === 2)
+            {
+                // get items with the right status
+                responseArray.forEach(function (item)
+                {
+                    if (item.state === "d")
+                    {
+                        foundItemsArray.push(item);
+                    }
+                });
+                // how many items to show?
+                itemsNumber = foundItemsArray.length;
+                // just in case...
+                done = foundItemsArray.length;
+                // how many pages?
+                pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                // show
+                if (foundItemsArray.length === 0)
+                {
+                    $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+                }
+                else
+                {
+                    // show itemsPerPage items on a page, depending on the selected page
+                    for (var i = (selectedPage * itemsPerPage) - itemsPerPage; i < foundItemsArray.length; i++)  // [*FOR*]
+                    {
+                        if (counter < itemsPerPage)
+                        {
+                            $('#content_container').append('<div class="item done" id="' + foundItemsArray[i].id
+                                + '"><div class="checkbox checked" id="' + foundItemsArray[i].id + '"></div><div class="content" id="'
+                                + foundItemsArray[i].id + '">' + foundItemsArray[i].value + '</div><div class="remove_item" id="'
+                                + foundItemsArray[i].id + '"></div></div>');
+                            counter++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
             }
             navigation();
+            stats();
         }
+
+
 
 
 
@@ -223,12 +242,6 @@ $(document).ready(
                         $(this).removeClass('checked');
                         pend++;
                         done--;
-                        // remove from html if show status is wrong
-                        if (whatToShow === 2)
-                        {
-                            $(this).parent('div').remove();
-                        }
-                        draw();
                     }
                     else
                     {
@@ -238,12 +251,6 @@ $(document).ready(
                         $(this).addClass('checked');
                         pend--;
                         done++;
-                        // remove from html if show status is wrong
-                        if (whatToShow === 1)
-                        {
-                            $(this).parent('div').remove();
-                        }
-                        draw();
                     }
                 }
             });
@@ -256,8 +263,8 @@ $(document).ready(
             {
                 console.log("res", res)
             });
-            // show stats
-            stats();
+            // redraw
+            draw();
         }
 
 
@@ -301,6 +308,8 @@ $(document).ready(
                         console.log("res", res)
                     });
                 }
+                // redraw
+                draw();
             }
         }
 
@@ -336,11 +345,8 @@ $(document).ready(
             {
                 console.log("res", res)
             });
-            // remove from html
-            //$(this).parent('div').remove();
+            // redraw
             draw();
-            // show stats
-            stats();
         }
 
 
@@ -358,11 +364,10 @@ $(document).ready(
             itemID = 0;
             pend = 0;
             done = 0;
-            // clear array (just in case...)
+            // clear array
             responseArray = [];
-            // show stats
-            navigation();
-            stats();
+            // redraw
+            draw();
         }
 
 
@@ -388,22 +393,18 @@ $(document).ready(
                     console.log("res", res)
                 });
 
-                draw();
-
                 $('#item_value').val("").focus();
                 itemID++;
                 pend++;
-                stats();
+
+                // redraw
+                draw();
             }
         }
 
 
 
-
-
-
-
-        // "PAGINATION" FUNCTION (ON PAGE NUMBER CLICK)
+        // "PAGINATION" FUNCTION (PAGE NUMBER CLICK)
         function pagination ()
         {
             // get ID of the selected page
@@ -412,8 +413,8 @@ $(document).ready(
             draw();
         }
         // "NAVIGATION" FUNCTION (SHOWS NAVIGATION PANEL)
-        function navigation () {
-
+        function navigation ()
+        {
             // re-count items / pages in case of deletion / status change
             switch (whatToShow)
             {
@@ -451,17 +452,9 @@ $(document).ready(
 
 
 
-
-
-
-
         // "START UP" FUNCTION
-        function start () {
-            // show mode: all
-            whatToShow = 0;
-            selectedPage = 1;
-            // clear html
-            $('#content_container').html("");
+        function start ()
+        {
             // send "GET" to DB, receive array of objects and save it to the local array
             $.ajax({
                 url: "tasks/",
@@ -470,42 +463,31 @@ $(document).ready(
                 console.log("res", res);
                 // write response to the array
                 responseArray = res;
+
                 if (responseArray.length === 0)
                 {
                     $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+                    showAll()
                 }
                 else
                 {
                     // set itemID
                     itemID = Math.max.apply(Math,responseArray.map(function(o){return o.id;})) + 1;
+                    // count pending / done
                     responseArray.forEach(function (item)
                     {
                         if (item.state === "p")
                         {
-                            // draw this shi--
-                            $('#content_container').append('<div class="item" id="' + item.id
-                                + '"><div class="checkbox" id="' + item.id + '"></div><div class="content" id="'
-                                + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                                + '"></div></div>');
                             pend++;
                         }
                         else
                         {
-                            $('#content_container').append('<div class="item done" id="' + item.id
-                                + '"><div class="checkbox checked" id="' + item.id + '"></div><div class="content" id="'
-                                + item.id + '">' + item.value + '</div><div class="remove_item" id="' + item.id
-                                + '"></div></div>');
                             done++;
                         }
                     });
-                    // show stats
+                    showAll()
                 }
             });
-            $('#showAll').addClass('control_selected');
-            $('#showPending').removeClass('control_selected');
-            $('#showCompleted').removeClass('control_selected');
-            navigation();
-            stats();
         }
 
         start();
@@ -542,7 +524,7 @@ $(document).ready(
         $('#content_container').on('click', '.item > .checkbox', changeStatus);
 
         // edit item value
-        $('#content_container').on('click', '.item > .content', editValue);
+        $('#content_container').on('dblclick', '.item > .content', editValue);
 
         // apply item value changes on ENTER
         $('#content_container').on('keydown', '.item > .editItem', applyValue);
