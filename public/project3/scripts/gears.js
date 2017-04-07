@@ -420,19 +420,18 @@ $(document).ready(
             {
                 case 0:
                     itemsNumber = pend + done;
-                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
                     break;
                 case 1:
                     itemsNumber = pend;
-                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
                     break;
                 case 2:
                     itemsNumber = done;
-                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
                     break;
                 default:
                     alert("Something's wrong... I can feel it!")
             }
+            pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+
             if (pagesNumber < 1)
             {
                 pagesNumber = 1;

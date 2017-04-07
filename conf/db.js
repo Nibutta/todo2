@@ -9,16 +9,23 @@ var mongoose = require('mongoose');
 // schema
 var itemSchema = mongoose.Schema({
     id: Number
-    , value: String
-    , state: String
+    , value:    String
+    , state:    String
+     , page:    Number
+     , qnty:    Number
 
 });
+
+var itemsPerPage = 5;   // number of items on page
+var selectedPage = 1;   // selected page
+var pagesNumber = 1;    // number of pages on startup
+var itemsNumber = 0;    // how many items to show
 
 // model
 var itemModel = mongoose.model('itemModel', itemSchema);
 
 // item
-var item = new itemModel({id: 0, value: "text", state: "p"});
+var item = new itemModel({id: 0, value: "text", state: "p", page: 1, qnty: 0});
 
 //item.save(function (err, data) {
 //    if (err) return console.error(err);
@@ -31,13 +38,35 @@ var taskRouter = express.Router();
 // SEND ALL ITEMS
 taskRouter.get('/', function(req, res, next)
     {
-        itemModel.find({}, function (err, items)
+        itemModel.find({}, function (err, foundItemsArray)
         {
             if (err) res.send(err);
-            res.send(items);
+            res.send(foundItemsArray);
             console.log("--> SEND ITEMS (ALL)");
         });
     });
+//******************************************************************
+// SEND PENDING ITEMS
+taskRouter.get('/pending', function(req, res, next)
+{
+    itemModel.find({state: "p"}, function (err, foundItemsArray)
+    {
+        if (err) res.send(err);
+        res.send(foundItemsArray);
+        console.log("--> SEND ITEMS (PENDING)");
+    });
+});
+//******************************************************************
+// SEND COMPLETED ITEMS
+taskRouter.get('/completed', function(req, res, next)
+{
+    itemModel.find({state: "d"}, function (err, foundItemsArray)
+    {
+        if (err) res.send(err);
+        res.send(foundItemsArray);
+        console.log("--> SEND ITEMS (COMPLETED)");
+    });
+});
 //******************************************************************
 // CREATE NEW ITEM
 taskRouter.post('/create', function(req, res, next)
@@ -90,7 +119,7 @@ taskRouter.get('/clear', function(req, res, next)
         {
             if (err) res.send(err);
             res.send(items);  // send back empty array --- optional
-            console.log("--> CLEARED DATABASE");
+            console.log("--> DATABASE CLEARED!");
         });
     });
 
