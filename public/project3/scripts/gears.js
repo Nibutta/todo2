@@ -456,7 +456,7 @@ $(document).ready(
         {
             // send "GET" to DB, receive array of objects and save it to the local array
             $.ajax({
-                url: "tasks/",
+                url: "tasks/?page=1&status=all",
                 method: "GET"
             }).then(function (res) {
                 console.log("res", res);
