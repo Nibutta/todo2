@@ -152,17 +152,17 @@ $(document).ready(
                 {
                     if (responseArray[i].state === "p")
                     {
-                        $('#content_container').append('<div class="item" id="' + responseArray[i].id
-                            + '"><div class="checkbox" id="' + responseArray[i].id + '"></div><div class="content" id="'
-                            + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                            + responseArray[i].id + '"></div></div>');
+                        $('#content_container').append('<div class="item" id="' + responseArray[i]._id
+                            + '"><div class="checkbox" id="' + responseArray[i]._id + '"></div><div class="content" id="'
+                            + responseArray[i]._id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                            + responseArray[i]._id + '"></div></div>');
                     }
                     else
                     {
-                        $('#content_container').append('<div class="item done" id="' + responseArray[i].id
-                            + '"><div class="checkbox checked" id="' + responseArray[i].id + '"></div><div class="content" id="'
-                            + responseArray[i].id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                            + responseArray[i].id + '"></div></div>');
+                        $('#content_container').append('<div class="item done" id="' + responseArray[i]._id
+                            + '"><div class="checkbox checked" id="' + responseArray[i]._id + '"></div><div class="content" id="'
+                            + responseArray[i]._id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
+                            + responseArray[i]._id + '"></div></div>');
                     }
                 }
             }
@@ -201,11 +201,11 @@ $(document).ready(
         function changeStatus ()
         {
             // get ID of the selected item
-            var selectedID = $(this).attr('id');
+            var selectedID = String($(this).attr('id'));
             var newState = "";
             responseArray.forEach(function (item)
             {
-                if(item.id === +selectedID)
+                if(item._id === selectedID)
                 {
                     if (item.state === "d")
                     {
@@ -221,7 +221,7 @@ $(document).ready(
             $.ajax({
                 url     : "tasks/update",
                 method  : "POST",
-                data    : { id: selectedID, state: newState }
+                data    : { _id: selectedID, state: newState }
             }).then(function(res)
             {
                 console.log("res", res)
@@ -249,14 +249,14 @@ $(document).ready(
                 if ($(this).val() !== "")
                 {
                     //get ID of the selected item
-                    var selectedID = $(this).parent('div').attr('id');
+                    var selectedID = String($(this).parent('div').attr('id'));
                     // changing html
                     $(this).replaceWith($('<div class="content" id="' + selectedID + '">' + $(this).val() + '</div>'));
                     newValue = $(this).val();
                     // applying new value to the array
                     responseArray.forEach(function (item, i)
                     {
-                        if (item.id === +selectedID)
+                        if (item._id === selectedID)
                         {
                             responseArray[i].value = newValue;
                         }
@@ -265,7 +265,7 @@ $(document).ready(
                     $.ajax({
                         url     : "tasks/edit",
                         method  : "POST",
-                        data    : { id: selectedID, value: newValue }
+                        data    : { _id: selectedID, value: newValue }
                     }).then(function(res)
                     {
                         console.log("res", res)
@@ -282,10 +282,10 @@ $(document).ready(
         function killItem ()
         {
             // get ID of the selected item
-            var selectedID = $(this).attr('id');
+            var selectedID = String($(this).attr('id'));
             responseArray.forEach(function (item, i)
             {
-                if (item.id === +selectedID)
+                if (item._id === selectedID)
                 {
                     if (item.state === "p")
                     {
@@ -303,7 +303,7 @@ $(document).ready(
             $.ajax({
                 url     : "tasks/delete",
                 method  : "POST",
-                data    : { id: selectedID }
+                data    : { _id: selectedID }
             }).then(function(res)
             {
                 console.log("res", res)

@@ -8,8 +8,7 @@ var mongoose = require('mongoose');
 
 // schema
 var messageSchema = mongoose.Schema({
-         id:    Number
-    , value:    String
+      value:    String
     , state:    String
     , pendN:    Number
     , doneN:    Number});
@@ -26,12 +25,12 @@ var sliced = [];
 
 var ipend = 0;
 var idone = 0;
-var imax = 0;           // id
+
 // model
 var messageModel = mongoose.model('messageModel', messageSchema);
 
 // item
-var message = new messageModel({id: 0, value: "text", state: "p", pendN: 0, doneN: 0});
+var message = new messageModel({value: "text", state: "p", pendN: 0, doneN: 0});
 
 var express = require('express');
 var taskRouter = express.Router();
@@ -120,7 +119,6 @@ taskRouter.get('/', function(req, res, next)
                 // RECOUNT
                 if (foundItemsArray.length === 0)
                 {
-                    imax = 0;
                     ipend = 0;
                     idone = 0;
                 }
@@ -128,8 +126,6 @@ taskRouter.get('/', function(req, res, next)
                 {
                     ipend = 0;
                     idone = 0;
-                    // get max ID number (to set itemID on client)
-                    imax = Math.max.apply(Math, foundItemsArray.map(function (o) {return o.id;}));
                     foundItemsArray.forEach(function (entry)
                     {
                         if (entry.state === "p")
@@ -200,17 +196,16 @@ taskRouter.get('/', function(req, res, next)
 // CREATE NEW ITEM
 taskRouter.post('/create', function(req, res, next)
 {
-    var itemID = imax + 1;
     var itemValue = req.body.value;
     var itemState = req.body.state;
 
-    var item = new messageModel({id: itemID, value: itemValue, state: itemState});
+    var item = new messageModel({value: itemValue, state: itemState});
 
     item.save(function(saved_item)
     {
         res.send(saved_item);
-        console.log("--> CREATED NEW ITEM, ID: ", itemID);
-        console.log("                   VALUE: ", itemValue);
+        console.log("--> CREATED NEW ITEM!");
+        console.log("               VALUE: ", itemValue);
     });
 });
 //******************************************************************
@@ -230,10 +225,10 @@ taskRouter.get('/clear', function(req, res, next)
 // UPDATE ITEM STATUS
 taskRouter.post('/update', function(req, res, next)
 {
-    messageModel.findOneAndUpdate({id: req.body.id}, {state: req.body.state}, function(upd_item)
+    messageModel.findOneAndUpdate({_id: req.body._id}, {state: req.body.state}, function(upd_item)
     {
         res.send(upd_item);
-        console.log("--> ITEM STATUS UPDATED, ID: ", req.body.id);
+        console.log("--> ITEM STATUS UPDATED, ID: ", req.body._id);
         console.log("                 NEW STATUS: ", req.body.state);
     });
 });
