@@ -51,12 +51,20 @@ $(document).ready(
                 }
                 else
                 {
-                    pend = 0;
-                    done = 0;
-                    // how many items in DB
-                    itemsNumber = 0;
-                    // how many pages?
-                    pagesNumber = 1;
+                    if (selectedPage !== 1)
+                    {
+                        selectedPage--;
+                        show();
+                    }
+                    else
+                    {
+                        pend = 0;
+                        done = 0;
+                        // how many items in DB
+                        itemsNumber = 0;
+                        // how many pages?
+                        pagesNumber = 1;
+                    }
                 }
                 draw();
             });
@@ -79,18 +87,23 @@ $(document).ready(
                 responseArray = res;
                 if (responseArray.length !== 0)
                 {
-                    pend = responseArray[0].pendN;
-                    done = responseArray[0].doneN;
                     // how many pages?
                     pagesNumber = Math.ceil(pend / itemsPerPage);
                 }
                 else
                 {
-                    pend = 0;
-                    // how many items in DB
-                    itemsNumber = 0;
-                    // how many pages?
-                    pagesNumber = 1;
+                    if (selectedPage !== 1)
+                    {
+                        selectedPage--;
+                        show();
+                    }
+                    else
+                    {
+                        // how many items in DB
+                        itemsNumber = 0;
+                        // how many pages?
+                        pagesNumber = 1;
+                    }
                 }
                 draw();
             });
@@ -113,18 +126,23 @@ $(document).ready(
                 responseArray = res;
                 if (responseArray.length !== 0)
                 {
-                    pend = responseArray[0].pendN;
-                    done = responseArray[0].doneN;
                     // how many pages?
                     pagesNumber = Math.ceil(done / itemsPerPage);
                 }
                 else
                 {
-                    done = 0;
-                    // how many items in DB
-                    itemsNumber = 0;
-                    // how many pages?
-                    pagesNumber = 1;
+                    if (selectedPage !== 1)
+                    {
+                        selectedPage--;
+                        show();
+                    }
+                    else
+                    {
+                        // how many items in DB
+                        itemsNumber = 0;
+                        // how many pages?
+                        pagesNumber = 1;
+                    }
                 }
                 draw();
             });
@@ -204,10 +222,14 @@ $(document).ready(
                     if (item.state === "p")
                     {
                         newState = "d";
+                        pend--;
+                        done++;
                     }
                     else
                     {
                         newState = "p";
+                        pend++;
+                        done--;
                     }
                 }
             });
@@ -261,6 +283,20 @@ $(document).ready(
         {
             // get ID of the selected item
             var selectedID = String($(this).attr('id'));
+            responseArray.forEach(function (item)
+            {
+                if (item._id === selectedID)
+                {
+                    if (item.state === "p")
+                    {
+                        pend--;
+                    }
+                    if (item.state === "d")
+                    {
+                        done--;
+                    }
+                }
+            });
             // update database
             $.ajax({
                 url     : "tasks/delete/" + String(selectedID),
@@ -311,7 +347,6 @@ $(document).ready(
                     show();
                 });
                 $('#item_value').val("").focus();
-                //pend++;
             }
         }
 

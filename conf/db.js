@@ -242,8 +242,6 @@ taskRouter.put('/check/:id', function(req, res, next)
         item.save(function (err, saved)
         {
             if (err) res.send(err);
-            //saved.pendN = ipend;
-            //saved.doneN = idone;
             res.send(saved);
         });
 

@@ -214,22 +214,23 @@ input:focus {
 }
 #content_container .item .checkbox {
     align-self: center;
-    background-image: url("check_x20.png");
-    opacity: .5;
+    opacity: .3;
     height: 20px;
     width: 20px;
+    border-radius: 50%;
+    background-image: url("check_x20.png");
 }
-#content_container .item .checkbox:hover {
+#content_container .item:hover .checkbox {
     opacity: 1;
     cursor: pointer;
 }
 .checked {
-    background-color: #00ffbc;
+    background: #ff4000;
     align-self: center;
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    opacity: .5;
+    opacity: .3;
 }
 #content_container .item .content {
     align-self: center;
@@ -238,11 +239,11 @@ input:focus {
 #content_container .item .remove_item {
     background-image: url("cross_x20.png");
     align-self: center;
-    opacity: .4;
+    opacity: .1;
     height: 20px;
     width: 20px;
 }
-#content_container .item .remove_item:hover {
+#content_container .item:hover .remove_item {
     opacity: 1;
     cursor: pointer;
 }
