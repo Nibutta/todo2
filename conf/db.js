@@ -45,10 +45,10 @@ function toSend()
     // get the number of items in db
     itemsNumber = foundItemsArray.length;
 
-    if (foundItemsArray.length !== 0)
+    // get what to send
+    sliced = foundItemsArray.slice(startpoint, startpoint + itemsPerPage);
+    if (sliced.length !== 0)
     {
-        // get what to send
-        sliced = foundItemsArray.slice(startpoint, startpoint + itemsPerPage);
         sliced[0].pendN = ipend;     // set number of pending items
         sliced[0].doneN = idone;     // set number of completed items
     }
@@ -65,14 +65,9 @@ function toSend()
 // SENDING ITEMS
 taskRouter.get('/', function(req, res, next)
     {
-        // localhost:3000/api/byid/:id
-        // localhost:3000/api/todos?page=3&status=pennding
-        // req.params.id = 123
-        // req.query.page = '3'
-        // req.query.status = 'pending'
-
         foundItemsArray = [];
         sliced = [];
+        var parseRes = [];
 
         // set selected page
         if ((req.query.page === "") || (isNaN(req.query.page) === true))
@@ -148,18 +143,32 @@ taskRouter.get('/', function(req, res, next)
 
         if (whatToSend === 1)
         {
-            messageModel.find({state: "p"}, function (err, found)
+            messageModel.find({}, function (err, found)
             {
                 if (err) res.send(err);
-                foundItemsArray = found;
+                parseRes = found;
                 // RECOUNT
-                if (foundItemsArray.length === 0)
+                if (parseRes.length === 0)
                 {
                     ipend = 0;
+                    idone = 0;
                 }
                 else
                 {
-                    ipend = foundItemsArray.length;
+                    ipend = 0;
+                    idone = 0;
+                    parseRes.forEach(function (entry)
+                    {
+                        if (entry.state === "p")
+                        {
+                            ipend++;
+                            foundItemsArray.push(entry);
+                        }
+                        else
+                        {
+                            idone++;
+                        }
+                    })
                 }
 
                 toSend();
@@ -171,18 +180,32 @@ taskRouter.get('/', function(req, res, next)
 
         if (whatToSend === 2)
         {
-            messageModel.find({state: "d"}, function (err, found)
+            messageModel.find({}, function (err, found)
             {
                 if (err) res.send(err);
-                foundItemsArray = found;
+                parseRes = found;
                 // RECOUNT
-                if (foundItemsArray.length === 0)
+                if (parseRes.length === 0)
                 {
+                    ipend = 0;
                     idone = 0;
                 }
                 else
                 {
-                    idone = foundItemsArray.length;
+                    ipend = 0;
+                    idone = 0;
+                    parseRes.forEach(function (entry)
+                    {
+                        if (entry.state === "p")
+                        {
+                            ipend++;
+                        }
+                        else
+                        {
+                            idone++;
+                            foundItemsArray.push(entry);
+                        }
+                    })
                 }
 
                 toSend();
@@ -209,6 +232,53 @@ taskRouter.post('/create', function(req, res, next)
     });
 });
 //******************************************************************
+// CHANGE ITEM STATUS
+taskRouter.put('/check/:id', function(req, res, next)
+{
+    messageModel.findById(req.params.id, function(err, item)
+    {
+        if (err) res.send(err);
+        item.state = req.body.state;
+        item.save(function (err, saved)
+        {
+            if (err) res.send(err);
+            //saved.pendN = ipend;
+            //saved.doneN = idone;
+            res.send(saved);
+        });
+
+        console.log("--> ITEM STATE UPDATED, ID: ", req.params.id);
+        console.log("                 NEW STATE: ", item.state);
+    });
+});
+//******************************************************************
+// EDIT ITEM
+taskRouter.put('/edit/:id', function(req, res, next)
+{
+    messageModel.findById(req.params.id, function(err, item)
+    {
+        if (err) res.send(err);
+        item.value = req.body.value;
+        item.save(function (err, saved)
+        {
+            if (err) res.send(err);
+        });
+        res.send(item);
+        console.log("--> ITEM VALUE UPDATED, ID: ", req.params.id);
+        console.log("                 NEW VALUE: ", req.body.value);
+    });
+});
+//******************************************************************
+// DELETE ITEM
+taskRouter.delete('/delete/:id', function(req, res, next)
+{
+    messageModel.remove({_id: req.params.id}, function(del_item)
+    {
+        res.send(del_item);
+        console.log("--> ITEM DELETED, ID: ", req.params.id);
+    });
+});
+//******************************************************************
 // CLEAR DATABASE
 taskRouter.get('/clear', function(req, res, next)
 {
@@ -219,49 +289,6 @@ taskRouter.get('/clear', function(req, res, next)
         console.log("--> DATABASE CLEARED!");
         foundItemsArray = [];
         sliced = [];
-    });
-});
-//******************************************************************
-// UPDATE ITEM STATUS
-taskRouter.post('/update', function(req, res, next)
-{
-    messageModel.findOneAndUpdate({_id: req.body._id}, {state: req.body.state}, function(upd_item)
-    {
-        res.send(upd_item);
-        console.log("--> ITEM STATUS UPDATED, ID: ", req.body._id);
-        console.log("                 NEW STATUS: ", req.body.state);
-    });
-});
-//******************************************************************
-// DELETE ITEM
-taskRouter.post('/delete/:id', function(req, res, next)
-{
-    itemModel.remove({id: req.params.id}, function(del_item)
-    {
-        res.send(del_item);
-        console.log("--> ITEM DELETED, ID: ", req.params.id);
-    });
-});
-//******************************************************************
-// SEND PENDING ITEMS (when "Show pending" is clicked)
-taskRouter.get('/pending', function(req, res, next)
-{
-    messageModel.find({state: "p"}, function (err, foundItemsArray)
-    {
-        if (err) res.send(err);
-        res.send(foundItemsArray);
-        console.log("--> SEND ITEMS (PENDING)");
-    });
-});
-//******************************************************************
-// SEND COMPLETED ITEMS (when "Show pending" is clicked)
-taskRouter.get('/completed', function(req, res, next)
-{
-    messageModel.find({state: "d"}, function (err, foundItemsArray)
-    {
-        if (err) res.send(err);
-        res.send(foundItemsArray);
-        console.log("--> SEND ITEMS (COMPLETED)");
     });
 });
 

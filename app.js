@@ -34,10 +34,9 @@ app.use('/project3/tasks', taskAPI);
 taskAPI.get('/', db);
 taskAPI.post('/create', db);
 taskAPI.get('/clear', db);
-taskAPI.post('/update', db);
-taskAPI.post('/delete', db);
-taskAPI.post('/edit', db);
-//taskAPI.post('/edit/:id', db.edit);
+taskAPI.put('/check/:id', db);
+taskAPI.put('/edit/:id', db);
+taskAPI.delete('/delete/:id', db);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -136,6 +136,13 @@ input {
     min-width: 100px;
     align-self: center;
     margin: 0 15px;
+    box-shadow: 0 0 3px #ff4000;
+    border: 1px #ff4000;
+}
+input:focus {
+    outline: none !important;
+    border:2px solid #ff4000;
+    box-shadow: 0 0 3px #ff4000;
 }
 .editItem {
     padding: 3px 5px;
@@ -208,7 +215,7 @@ input {
 #content_container .item .checkbox {
     align-self: center;
     background-image: url("check_x20.png");
-    opacity: .4;
+    opacity: .5;
     height: 20px;
     width: 20px;
 }
@@ -222,7 +229,7 @@ input {
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    opacity: .4;
+    opacity: .5;
 }
 #content_container .item .content {
     align-self: center;
@@ -246,14 +253,16 @@ input {
     text-align: center;
     padding: 3px;
     margin-right: 3px;
-    background-color: #f8f8f8;
+    background-color: #ffefdf;
     align-self: center;
     width: 25px;
 }
 .pageN:hover {
-    background-color: #d0d0d0;
+    background-color: #ff4000;
+    color: #ffffff;
     cursor: pointer;
 }
 .selectedN {
-    background-color: #d0d0d0;
+    background-color: #ff4000;
+    color: #ffffff;
 }

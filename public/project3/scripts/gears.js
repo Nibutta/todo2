@@ -132,9 +132,6 @@ $(document).ready(
             $('#showPending').removeClass('control_selected');
             $('#showCompleted').addClass('control_selected');
         }
-
-
-
         // "DRAW" FUNCTION: DRAW ITEMS DEPENDING ON WHAT TO DRAW
         function draw ()
         {
@@ -169,9 +166,6 @@ $(document).ready(
             navigation();
             stats();
         }
-
-
-
         // "SHOW"
         function show ()
         {
@@ -200,46 +194,42 @@ $(document).ready(
         // "CHANGE STATUS" FUNCTION // todo
         function changeStatus ()
         {
+            var newState = "";
             // get ID of the selected item
             var selectedID = String($(this).attr('id'));
-            var newState = "";
             responseArray.forEach(function (item)
             {
-                if(item._id === selectedID)
+                if (item._id === selectedID)
                 {
-                    if (item.state === "d")
+                    if (item.state === "p")
                     {
-                        newState = "p";
+                        newState = "d";
                     }
                     else
                     {
-                        newState = "d";
+                        newState = "p";
                     }
                 }
             });
             // update database
             $.ajax({
-                url     : "tasks/update",
-                method  : "POST",
-                data    : { _id: selectedID, state: newState }
+                url     : "tasks/check/" + String(selectedID),
+                method  : "PUT",
+                data    : { state: newState }
             }).then(function(res)
             {
-                console.log("res", res)
+                console.log("res", res);
+                show();
             });
-            // redraw
-            show();
         }
-
-
-
-        // "EDIT ITEM" FUNCTION // todo
+        // "EDIT ITEM" FUNCTION
         function editValue ()
         {
             var thisData = $(this).html(), $el = $('<input type="text" class="editItem"/>');
             $(this).replaceWith($el);
             $el.val(thisData).focus();
         }
-        // "APPLY NEW VALUE" FUNCTION, WORKS WHILE "EDIT ITEM" IS ACTIVE [***]
+        // "APPLY NEW VALUE" FUNCTION, WORKS WHILE "EDIT ITEM" IS ACTIVE
         function applyValue (e)
         {
             var newValue = "";
@@ -253,67 +243,34 @@ $(document).ready(
                     // changing html
                     $(this).replaceWith($('<div class="content" id="' + selectedID + '">' + $(this).val() + '</div>'));
                     newValue = $(this).val();
-                    // applying new value to the array
-                    responseArray.forEach(function (item, i)
-                    {
-                        if (item._id === selectedID)
-                        {
-                            responseArray[i].value = newValue;
-                        }
-                    });
                     // update database
                     $.ajax({
-                        url     : "tasks/edit",
-                        method  : "POST",
-                        data    : { _id: selectedID, value: newValue }
+                        url     : "tasks/edit/" + String(selectedID),
+                        method  : "PUT",
+                        data    : { value: newValue }
                     }).then(function(res)
                     {
-                        console.log("res", res)
+                        console.log("res", res);
+                        show(); // this is optional
                     });
                 }
-                // redraw
-                draw();
             }
         }
-
-
-
-        // "REMOVE ITEM" FUNCTION // todo
+        // "REMOVE ITEM" FUNCTION
         function killItem ()
         {
             // get ID of the selected item
             var selectedID = String($(this).attr('id'));
-            responseArray.forEach(function (item, i)
-            {
-                if (item._id === selectedID)
-                {
-                    if (item.state === "p")
-                    {
-                        pend--;
-                        responseArray.splice(i, 1);
-                    }
-                    if (item.state === "d")
-                    {
-                        done--;
-                        responseArray.splice(i, 1);
-                    }
-                }
-            });
             // update database
             $.ajax({
-                url     : "tasks/delete",
-                method  : "POST",
-                data    : { _id: selectedID }
+                url     : "tasks/delete/" + String(selectedID),
+                method  : "DELETE"
             }).then(function(res)
             {
-                console.log("res", res)
+                console.log("res", res);
             });
-            // redraw
-            draw();
+            show();
         }
-
-
-
         // "CLEAR ALL" FUNCTION
         function clearAll ()
         {
