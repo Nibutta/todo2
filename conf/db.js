@@ -17,24 +17,20 @@ var itemsPerPage = 5;   // number of items on page
 var selectedPage = 1;   // selected page
 var itemsNumber = 0;    // how many items to show
 
-var whatToSend = 0;     // 0 == send all, 1 == send pending, 2 == send completed
+var whatToSend = "all";
 var foundItemsArray = [];
 
 var startpoint = 0;
 var sliced = [];
 
-var ipend = 0;
-var idone = 0;
+var sPend = 0;
+var sDone = 0;
 
 // model
 var messageModel = mongoose.model('messageModel', messageSchema);
 
-// item
-var message = new messageModel({value: "text", state: "p", pendN: 0, doneN: 0});
-
 var express = require('express');
 var taskRouter = express.Router();
-
 
 // "TO SEND" FUNCTION
 function toSend()
@@ -49,26 +45,36 @@ function toSend()
     sliced = foundItemsArray.slice(startpoint, startpoint + itemsPerPage);
     if (sliced.length !== 0)
     {
-        sliced[0].pendN = ipend;     // set number of pending items
-        sliced[0].doneN = idone;     // set number of completed items
+        sliced[0].pendN = sPend;     // set number of pending items
+        sliced[0].doneN = sDone;     // set number of completed items
     }
 
-    console.log("--> SENDING ITEMS TO CLIENT: ", + sliced.length);
-    console.log("                FOUND ITEMS: ", + itemsNumber);
-    console.log("                     STATUS: ", + whatToSend);
-    console.log("                       PAGE: ", + selectedPage);
+    console.log("--> SENDING ITEMS TO CLIENT: ", sliced.length);
+    console.log("                FOUND ITEMS: ", itemsNumber);
+    console.log("                     STATUS: ", whatToSend);
+    console.log("                       PAGE: ", selectedPage);
     console.log("    -----------------------");
-    console.log("                       PEND: ", + ipend);
-    console.log("                       DONE: ", + idone);
+    console.log("                       PEND: ", sPend);
+    console.log("                       DONE: ", sDone);
 }
 //******************************************************************
 // SENDING ITEMS
 taskRouter.get('/', function(req, res, next)
     {
+        messageModel.find({state: "pending"}).count(function (err, i)
+        {
+            sPend = i;
+        });
+        messageModel.find({state: "completed"}).count(function (err, i)
+        {
+            sDone = i;
+        });
+
         foundItemsArray = [];
         sliced = [];
         var parseRes = [];
 
+        selectedPage = +req.query.page;
         // set selected page
         if ((req.query.page === "") || (isNaN(req.query.page) === true))
         {
@@ -77,35 +83,35 @@ taskRouter.get('/', function(req, res, next)
         }
         else
         {
-            selectedPage = +req.query.page;
+            selectedPage = req.query.page;
         }
 
         // choose what to send
         if (req.query.status === "all")
         {
-            whatToSend = 0; // send all
+            whatToSend = "all"; // send all
         }
         else
         {
             if (req.query.status === "pending")
             {
-                whatToSend = 1; // send pending
+                whatToSend = "pending"; // send pending
             }
             else
             {
                 if (req.query.status === "completed")
                 {
-                    whatToSend = 2; // send completed
+                    whatToSend = "completed"; // send completed
                 }
                 else
                 {
-                    whatToSend = 0; // send all
+                    whatToSend = "all"; // send all
                     console.log("--> STATUS = ?, SENDING ALL...")
                 }
             }
         }
 
-        if (whatToSend === 0)
+        if (whatToSend === "all")
         {
             messageModel.find({}, function (err, found)
             {
@@ -114,22 +120,22 @@ taskRouter.get('/', function(req, res, next)
                 // RECOUNT
                 if (foundItemsArray.length === 0)
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                 }
                 else
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                     foundItemsArray.forEach(function (entry)
                     {
-                        if (entry.state === "p")
+                        if (entry.state === "pending")
                         {
-                            ipend++;
+                            sPend++;
                         }
                         else
                         {
-                            idone++;
+                            sDone++;
                         }
                     })
                 }
@@ -141,7 +147,7 @@ taskRouter.get('/', function(req, res, next)
             });
         }
 
-        if (whatToSend === 1)
+        if (whatToSend === "pending")
         {
             messageModel.find({}, function (err, found)
             {
@@ -150,23 +156,23 @@ taskRouter.get('/', function(req, res, next)
                 // RECOUNT
                 if (parseRes.length === 0)
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                 }
                 else
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                     parseRes.forEach(function (entry)
                     {
-                        if (entry.state === "p")
+                        if (entry.state === "pending")
                         {
-                            ipend++;
+                            sPend++;
                             foundItemsArray.push(entry);
                         }
                         else
                         {
-                            idone++;
+                            sDone++;
                         }
                     })
                 }
@@ -178,7 +184,7 @@ taskRouter.get('/', function(req, res, next)
             });
         }
 
-        if (whatToSend === 2)
+        if (whatToSend === "completed")
         {
             messageModel.find({}, function (err, found)
             {
@@ -187,22 +193,22 @@ taskRouter.get('/', function(req, res, next)
                 // RECOUNT
                 if (parseRes.length === 0)
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                 }
                 else
                 {
-                    ipend = 0;
-                    idone = 0;
+                    sPend = 0;
+                    sDone = 0;
                     parseRes.forEach(function (entry)
                     {
-                        if (entry.state === "p")
+                        if (entry.state === "pending")
                         {
-                            ipend++;
+                            sPend++;
                         }
                         else
                         {
-                            idone++;
+                            sDone++;
                             foundItemsArray.push(entry);
                         }
                     })
@@ -219,52 +225,37 @@ taskRouter.get('/', function(req, res, next)
 // CREATE NEW ITEM
 taskRouter.post('/create', function(req, res, next)
 {
-    var itemValue = req.body.value;
-    var itemState = req.body.state;
-
-    var item = new messageModel({value: itemValue, state: itemState});
-
-    item.save(function(saved_item)
+    messageModel.create({ value: req.body.value, state: req.body.state }, function (err, item)
     {
-        res.send(saved_item);
-        console.log("--> CREATED NEW ITEM!");
-        console.log("               VALUE: ", itemValue);
+        if (err) res.send(err);
+        res.send(item);
+        console.log("-->        CREATED NEW ITEM!");
+        console.log("                      VALUE: ", req.body.value);
     });
 });
 //******************************************************************
 // CHANGE ITEM STATUS
 taskRouter.put('/check/:id', function(req, res, next)
 {
-    messageModel.findById(req.params.id, function(err, item)
+    messageModel.findOneAndUpdate({_id: req.params.id}, {state: req.body.state}, {new: true}, function(err, item)
     {
         if (err) res.send(err);
-        item.state = req.body.state;
-        item.save(function (err, saved)
-        {
-            if (err) res.send(err);
-            res.send(saved);
-        });
-
-        console.log("--> ITEM STATE UPDATED, ID: ", req.params.id);
-        console.log("                 NEW STATE: ", item.state);
+        res.send(item);
+        console.log("-->  ITEM STATE UPDATED, ID: ", req.params.id);
+        console.log("                  NEW STATE: ", item.state);
     });
 });
 //******************************************************************
 // EDIT ITEM
 taskRouter.put('/edit/:id', function(req, res, next)
 {
-    messageModel.findById(req.params.id, function(err, item)
+    messageModel.findOneAndUpdate({_id: req.params.id}, {value: req.body.value}, {new: true}, function(err, item)
     {
         if (err) res.send(err);
-        item.value = req.body.value;
-        item.save(function (err, saved)
-        {
-            if (err) res.send(err);
-        });
         res.send(item);
-        console.log("--> ITEM VALUE UPDATED, ID: ", req.params.id);
-        console.log("                 NEW VALUE: ", req.body.value);
-    });
+        console.log("-->  ITEM VALUE UPDATED, ID: ", req.params.id);
+        console.log("                  NEW VALUE: ", item.value);
+        });
 });
 //******************************************************************
 // DELETE ITEM
@@ -273,8 +264,8 @@ taskRouter.delete('/delete/:id', function(req, res, next)
     messageModel.remove({_id: req.params.id}, function(del_item)
     {
         res.send(del_item);
-        console.log("--> ITEM DELETED, ID: ", req.params.id);
-    });
+        console.log("-->        ITEM DELETED, ID: ", req.params.id);
+        });
 });
 //******************************************************************
 // CLEAR DATABASE
@@ -284,7 +275,7 @@ taskRouter.get('/clear', function(req, res, next)
     {
         if (err) res.send(err);
         res.send(items);  // send back empty array --- optional
-        console.log("--> DATABASE CLEARED!");
+        console.log("-->        DATABASE CLEARED!");
         foundItemsArray = [];
         sliced = [];
     });

@@ -5,7 +5,7 @@ $(document).ready(
         //*****************************************************************************************
         var responseArray = []; // array for items (response from db)
 
-        var itemState = "p";    // default item state p = pending, d = done
+        var itemState = "pending";    // default item state p = pending, d = done
         var itemValue = "";     // item value is empty on load
 
         var done = 0;           // done tasks
@@ -165,7 +165,7 @@ $(document).ready(
                 // show itemsPerPage items on a page, depending on the selected page
                 for (var i = 0; i < responseArray.length; i++)  // [*FOR*]
                 {
-                    if (responseArray[i].state === "p")
+                    if (responseArray[i].state === "pending")
                     {
                         $('#content_container').append('<div class="item" id="' + responseArray[i]._id
                             + '"><div class="checkbox" id="' + responseArray[i]._id + '"></div><div class="content" id="'
@@ -219,15 +219,15 @@ $(document).ready(
             {
                 if (item._id === selectedID)
                 {
-                    if (item.state === "p")
+                    if (item.state === "pending")
                     {
-                        newState = "d";
+                        newState = "completed";
                         pend--;
                         done++;
                     }
                     else
                     {
-                        newState = "p";
+                        newState = "pending";
                         pend++;
                         done--;
                     }
@@ -287,11 +287,11 @@ $(document).ready(
             {
                 if (item._id === selectedID)
                 {
-                    if (item.state === "p")
+                    if (item.state === "pending")
                     {
                         pend--;
                     }
-                    if (item.state === "d")
+                    if (item.state === "completed")
                     {
                         done--;
                     }
