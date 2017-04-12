@@ -128,6 +128,7 @@ a:hover {
 }
 .control_selected {
     color: #ff4000;
+    background: linear-gradient(to right, #f2efef, #ffffff);
 }
 input {
     padding: 3px 5px;

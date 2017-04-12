@@ -75,7 +75,7 @@ taskRouter.get('/', function(req, res, next)
 
         selectedPage = +req.query.page;
         // set selected page
-        if ((req.query.page === "") || (isNaN(req.query.page) === true))
+        if ((selectedPage === "") || (isNaN(selectedPage) === true))
         {
             console.log("--> PAGE = ?, SET PAGE TO 1...");
             selectedPage = 1;
