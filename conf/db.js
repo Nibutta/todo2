@@ -53,7 +53,7 @@ function toSend()
     // get the number of items in db
     itemsNumber = sPend + sDone;
 
-    if (foundItemsArray.length !== 0)
+    if (foundItemsArray[0] != null)
     {
         foundItemsArray[0].pendN = sPend;     // set number of pending items
         foundItemsArray[0].doneN = sDone;     // set number of completed items
@@ -123,11 +123,6 @@ taskRouter.get('/', function(req, res, next)
             {
                 if (err) res.send(err);
                 foundItemsArray = found;
-                if (foundItemsArray.length === 0)
-                {
-                    sPend = 0;
-                    sDone = 0;
-                }
                 toSend();
                 // send items to the client
                 res.send(foundItemsArray);
@@ -144,10 +139,6 @@ taskRouter.get('/', function(req, res, next)
                 {
                     if (err) res.send(err);
                     foundItemsArray = found;
-                    if (foundItemsArray.length === 0)
-                    {
-                        sPend = 0;
-                    }
                     toSend();
                     // send items to the client
                     res.send(foundItemsArray);
@@ -164,10 +155,6 @@ taskRouter.get('/', function(req, res, next)
                 {
                     if (err) res.send(err);
                     foundItemsArray = found;
-                    if (foundItemsArray.length === 0)
-                    {
-                        sDone = 0;
-                    }
                     toSend();
                     // send items to the client
                     res.send(foundItemsArray);
