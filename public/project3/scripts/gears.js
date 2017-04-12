@@ -281,6 +281,7 @@ $(document).ready(
         // "REMOVE ITEM" FUNCTION
         function killItem ()
         {
+            var delState = "";
             // get ID of the selected item
             var selectedID = String($(this).attr('id'));
             responseArray.forEach(function (item)
@@ -300,7 +301,8 @@ $(document).ready(
             // update database
             $.ajax({
                 url     : "tasks/delete/" + String(selectedID),
-                method  : "DELETE"
+                method  : "DELETE",
+                data    : { state: delState }
             }).then(function(res)
             {
                 console.log("res", res);

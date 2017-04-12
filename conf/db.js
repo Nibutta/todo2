@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 // connect to db
     mongoose.connect('mongodb://localhost/data', function () {
-    console.log('--> CONNECTED TO DATABASE');
+    console.log('-->   CONNECTED TO DATABASE!');
 });
 
 // schema
@@ -21,7 +21,6 @@ var whatToSend = "all";
 var foundItemsArray = [];
 
 var startpoint = 0;
-var sliced = [];
 
 var sPend = 0;
 var sDone = 0;
@@ -32,24 +31,35 @@ var messageModel = mongoose.model('messageModel', messageSchema);
 var express = require('express');
 var taskRouter = express.Router();
 
+function getStats()
+{
+    messageModel.find({state: "pending"}).count(function (err, i)
+    {
+        sPend = i;
+        console.log("-->         RECOUNT PENDING: ", sPend);
+    });
+    messageModel.find({state: "completed"}).count(function (err, i)
+    {
+        sDone = i;
+        console.log("-->       RECOUNT COMPLETED: ", sDone);
+    });
+}
+
+getStats();
+
 // "TO SEND" FUNCTION
 function toSend()
 {
-    // set point in array
-    startpoint = (selectedPage * itemsPerPage) - itemsPerPage;
-
     // get the number of items in db
-    itemsNumber = foundItemsArray.length;
+    itemsNumber = sPend + sDone;
 
-    // get what to send
-    sliced = foundItemsArray.slice(startpoint, startpoint + itemsPerPage);
-    if (sliced.length !== 0)
+    if (foundItemsArray.length !== 0)
     {
-        sliced[0].pendN = sPend;     // set number of pending items
-        sliced[0].doneN = sDone;     // set number of completed items
+        foundItemsArray[0].pendN = sPend;     // set number of pending items
+        foundItemsArray[0].doneN = sDone;     // set number of completed items
     }
 
-    console.log("--> SENDING ITEMS TO CLIENT: ", sliced.length);
+    console.log("--> SENDING ITEMS TO CLIENT: ", foundItemsArray.length);
     console.log("                FOUND ITEMS: ", itemsNumber);
     console.log("                     STATUS: ", whatToSend);
     console.log("                       PAGE: ", selectedPage);
@@ -61,24 +71,13 @@ function toSend()
 // SENDING ITEMS
 taskRouter.get('/', function(req, res, next)
     {
-        messageModel.find({state: "pending"}).count(function (err, i)
-        {
-            sPend = i;
-        });
-        messageModel.find({state: "completed"}).count(function (err, i)
-        {
-            sDone = i;
-        });
-
         foundItemsArray = [];
-        sliced = [];
-        var parseRes = [];
 
         selectedPage = +req.query.page;
         // set selected page
         if ((req.query.page === "") || (isNaN(req.query.page) === true))
         {
-            console.log("--> PAGE = ?, SETTING PAGE TO 1...");
+            console.log("--> PAGE = ?, SET PAGE TO 1...");
             selectedPage = 1;
         }
         else
@@ -111,114 +110,68 @@ taskRouter.get('/', function(req, res, next)
             }
         }
 
+        startpoint = (selectedPage * itemsPerPage) - itemsPerPage;
+        getStats();
+
         if (whatToSend === "all")
         {
-            messageModel.find({}, function (err, found)
+            messageModel.find({})
+                        .limit(itemsPerPage)
+                        .skip(startpoint)
+                        .sort({date: -1})
+                        .exec(function (err, found)
             {
                 if (err) res.send(err);
                 foundItemsArray = found;
-                // RECOUNT
                 if (foundItemsArray.length === 0)
                 {
                     sPend = 0;
                     sDone = 0;
                 }
-                else
-                {
-                    sPend = 0;
-                    sDone = 0;
-                    foundItemsArray.forEach(function (entry)
-                    {
-                        if (entry.state === "pending")
-                        {
-                            sPend++;
-                        }
-                        else
-                        {
-                            sDone++;
-                        }
-                    })
-                }
-
                 toSend();
-
                 // send items to the client
-                res.send(sliced);
+                res.send(foundItemsArray);
             });
         }
 
         if (whatToSend === "pending")
         {
-            messageModel.find({}, function (err, found)
-            {
-                if (err) res.send(err);
-                parseRes = found;
-                // RECOUNT
-                if (parseRes.length === 0)
+            messageModel.find({state: "pending"})
+                        .limit(itemsPerPage)
+                        .skip(startpoint)
+                        .sort({date: -1})
+                        .exec(function (err, found)
                 {
-                    sPend = 0;
-                    sDone = 0;
-                }
-                else
-                {
-                    sPend = 0;
-                    sDone = 0;
-                    parseRes.forEach(function (entry)
+                    if (err) res.send(err);
+                    foundItemsArray = found;
+                    if (foundItemsArray.length === 0)
                     {
-                        if (entry.state === "pending")
-                        {
-                            sPend++;
-                            foundItemsArray.push(entry);
-                        }
-                        else
-                        {
-                            sDone++;
-                        }
-                    })
-                }
-
-                toSend();
-
-                // send items to the client
-                res.send(sliced);
-            });
+                        sPend = 0;
+                    }
+                    toSend();
+                    // send items to the client
+                    res.send(foundItemsArray);
+                });
         }
 
         if (whatToSend === "completed")
         {
-            messageModel.find({}, function (err, found)
-            {
-                if (err) res.send(err);
-                parseRes = found;
-                // RECOUNT
-                if (parseRes.length === 0)
+            messageModel.find({state: "completed"})
+                        .limit(itemsPerPage)
+                        .skip(startpoint)
+                        .sort({date: -1})
+                        .exec(function (err, found)
                 {
-                    sPend = 0;
-                    sDone = 0;
-                }
-                else
-                {
-                    sPend = 0;
-                    sDone = 0;
-                    parseRes.forEach(function (entry)
+                    if (err) res.send(err);
+                    foundItemsArray = found;
+                    if (foundItemsArray.length === 0)
                     {
-                        if (entry.state === "pending")
-                        {
-                            sPend++;
-                        }
-                        else
-                        {
-                            sDone++;
-                            foundItemsArray.push(entry);
-                        }
-                    })
-                }
-
-                toSend();
-
-                // send items to the client
-                res.send(sliced);
-            });
+                        sDone = 0;
+                    }
+                    toSend();
+                    // send items to the client
+                    res.send(foundItemsArray);
+                });
         }
     });
 //******************************************************************
@@ -231,6 +184,7 @@ taskRouter.post('/create', function(req, res, next)
         res.send(item);
         console.log("-->        CREATED NEW ITEM!");
         console.log("                      VALUE: ", req.body.value);
+        //getStats();
     });
 });
 //******************************************************************
@@ -243,6 +197,7 @@ taskRouter.put('/check/:id', function(req, res, next)
         res.send(item);
         console.log("-->  ITEM STATE UPDATED, ID: ", req.params.id);
         console.log("                  NEW STATE: ", item.state);
+        //getStats();
     });
 });
 //******************************************************************
@@ -255,17 +210,19 @@ taskRouter.put('/edit/:id', function(req, res, next)
         res.send(item);
         console.log("-->  ITEM VALUE UPDATED, ID: ", req.params.id);
         console.log("                  NEW VALUE: ", item.value);
-        });
+    });
 });
 //******************************************************************
 // DELETE ITEM
 taskRouter.delete('/delete/:id', function(req, res, next)
 {
-    messageModel.remove({_id: req.params.id}, function(del_item)
+    messageModel.remove({_id: req.params.id}, function(err, del_item)
     {
+        if (err) res.send(err);
         res.send(del_item);
         console.log("-->        ITEM DELETED, ID: ", req.params.id);
-        });
+        //getStats();
+    });
 });
 //******************************************************************
 // CLEAR DATABASE
@@ -277,7 +234,7 @@ taskRouter.get('/clear', function(req, res, next)
         res.send(items);  // send back empty array --- optional
         console.log("-->        DATABASE CLEARED!");
         foundItemsArray = [];
-        sliced = [];
+        //getStats();
     });
 });
 
