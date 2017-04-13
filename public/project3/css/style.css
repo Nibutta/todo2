@@ -143,6 +143,7 @@ input:focus {
     outline: none !important;
     border:2px solid #ff4000;
     box-shadow: 0 0 3px #ff4000;
+    width: 45%;
 }
 .editItem {
     padding: 3px 5px;
@@ -266,4 +267,7 @@ input:focus {
 .selectedN {
     background-color: #ff4000;
     color: #ffffff;
+}
+#form__add {
+    align-self: center;
 }

@@ -22,7 +22,8 @@ $(document).ready(
         // FUNCTIONS
         //*****************************************************************************************
         // "SHOW STATS" FUNCTION
-        function stats () {
+        function stats ()
+        {
             $('#pending').html('Pending: ' + pend);
             $('#completed').html('Completed: ' + done);
         }
@@ -75,23 +76,25 @@ $(document).ready(
                 }
                 else
                 {
+                    var contClass = "";
+                    var checkClass = "";
                     // show itemsPerPage items on a page, depending on the selected page
                     responseArray.forEach(function (item)
                     {
                         if (item.state === "pending")
                         {
-                            $('#content_container').append('<div class="item" id="' + item._id
-                                + '"><div class="checkbox" id="' + item._id + '"></div><div class="content" id="'
-                                + item._id + '">' + item.value + '</div><div class="remove_item" id="'
-                                + item._id + '"></div></div>');
+                            contClass = "item";
+                            checkClass = "checkbox";
                         }
                         else
                         {
-                            $('#content_container').append('<div class="item done" id="' + item._id
-                                + '"><div class="checkbox checked" id="' + item._id + '"></div><div class="content" id="'
-                                + item._id + '">' + item.value + '</div><div class="remove_item" id="'
-                                + item._id + '"></div></div>');
+                            contClass = "item done";
+                            checkClass = "checkbox checked";
                         }
+                        $('#content_container').append('<div class="' + contClass + '" id="' + item._id
+                            + '"><div class="' + checkClass +'" id="' + item._id + '"></div><div class="content" id="'
+                            + item._id + '">' + item.value + '</div><div class="remove_item" id="'
+                            + item._id + '"></div></div>');
                     });
                 }
                 navigation();
@@ -265,7 +268,6 @@ $(document).ready(
         }
 
 
-
         // "START UP" FUNCTION
         function start ()
         {
@@ -285,14 +287,7 @@ $(document).ready(
         // BUTTONS / INTERACTIONS
         //*****************************************************************************************
         // add item to the list
-        $('#addButton').click(addItem);
-        $('#item_value').keyup(function (e)
-        {
-            if (e.keyCode === 13)
-            {
-                addItem();
-            }
-        });
+        $('#form__add').on('submit', addItem);
 
         // "SHOW ALL" CLiCK
         $('#showAll').click(function ()
