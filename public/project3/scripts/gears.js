@@ -29,128 +29,48 @@ $(document).ready(
 
 
 
-        // "SHOW ALL ITEMS" FUNCTION
-        function showAll ()
+        // "SHOW"
+        function show ()
         {
-            // send "GET" to DB, receive array of objects
+            // form link
+            switch (whatToShow)
+            {
+                case 0:
+                    link = "tasks?page=" + String(selectedPage);
+                    break;
+                case 1:
+                    link = "tasks?status=pending&page=" + String(selectedPage);
+                    break;
+                case 2:
+                    link = "tasks?status=completed&page=" + String(selectedPage);
+                    break;
+                default:
+                    link = "tasks?page=" + String(selectedPage);
+            }
+
+            // send "GET" to DB, receive an object
             $.ajax({
                 url: link,
                 method: "GET"
             }).then(function (res) {
                 console.log("res", res);
                 // write response to the array
-                responseArray = res;
-                if (responseArray.length !== 0)
+                responseArray = res.items;
+                pend = res.pendN;
+                done = res.doneN;
+                if (whatToShow === 0) itemsNumber = pend + done;
+                if (whatToShow === 1) itemsNumber = pend;
+                if (whatToShow === 2) itemsNumber = done;
+                pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
+                if ((responseArray.length === 0) && (selectedPage !== 1))
                 {
-                    pend = responseArray[0].pendN;
-                    done = responseArray[0].doneN;
-                    // how many items in DB
-                    itemsNumber = pend + done;
-                    // how many pages?
-                    pagesNumber = Math.ceil(itemsNumber / itemsPerPage);
-                }
-                else
-                {
-                    if (selectedPage !== 1)
-                    {
-                        selectedPage--;
-                        show();
-                    }
-                    else
-                    {
-                        pend = 0;
-                        done = 0;
-                        // how many items in DB
-                        itemsNumber = 0;
-                        // how many pages?
-                        pagesNumber = 1;
-                    }
+                    selectedPage--;
+                    show();
                 }
                 draw();
             });
-            $('#showAll').addClass('control_selected');
-            $('#showPending').removeClass('control_selected');
-            $('#showCompleted').removeClass('control_selected');
         }
-        // "SHOW PENDING ITEMS" FUNCTION
-        function showPending ()
-        {
-            // show pending
-            whatToShow = 1;
-            // send "GET" to DB, receive array of objects
-            $.ajax({
-                url: link,
-                method: "GET"
-            }).then(function (res) {
-                console.log("res", res);
-                // write response to the array
-                responseArray = res;
-                if (responseArray.length !== 0)
-                {
-                    // how many pages?
-                    pagesNumber = Math.ceil(pend / itemsPerPage);
-                }
-                else
-                {
-                    if (selectedPage !== 1)
-                    {
-                        selectedPage--;
-                        show();
-                    }
-                    else
-                    {
-                        // how many items in DB
-                        itemsNumber = 0;
-                        // how many pages?
-                        pagesNumber = 1;
-                    }
-                }
-                draw();
-            });
-            $('#showAll').removeClass('control_selected');
-            $('#showPending').addClass('control_selected');
-            $('#showCompleted').removeClass('control_selected');
-        }
-        // "SHOW COMPLETED ITEMS" FUNCTION
-        function showCompleted ()
-        {
-            // show completed items
-            whatToShow = 2;
-            // send "GET" to DB, receive array of objects
-            $.ajax({
-                url: link,
-                method: "GET"
-            }).then(function (res) {
-                console.log("res", res);
-                // write response to the array
-                responseArray = res;
-                if (responseArray.length !== 0)
-                {
-                    // how many pages?
-                    pagesNumber = Math.ceil(done / itemsPerPage);
-                }
-                else
-                {
-                    if (selectedPage !== 1)
-                    {
-                        selectedPage--;
-                        show();
-                    }
-                    else
-                    {
-                        // how many items in DB
-                        itemsNumber = 0;
-                        // how many pages?
-                        pagesNumber = 1;
-                    }
-                }
-                draw();
-            });
-            $('#showAll').removeClass('control_selected');
-            $('#showPending').removeClass('control_selected');
-            $('#showCompleted').addClass('control_selected');
-        }
-        // "DRAW" FUNCTION: DRAW ITEMS DEPENDING ON WHAT TO DRAW
+        // "DRAW" FUNCTION: DRAW ITEMS ON HTML
         function draw ()
         {
             // clear html
@@ -163,53 +83,31 @@ $(document).ready(
             else
             {
                 // show itemsPerPage items on a page, depending on the selected page
-                for (var i = 0; i < responseArray.length; i++)  // [*FOR*]
+                responseArray.forEach(function (item)
                 {
-                    if (responseArray[i].state === "pending")
+                    if (item.state === "pending")
                     {
-                        $('#content_container').append('<div class="item" id="' + responseArray[i]._id
-                            + '"><div class="checkbox" id="' + responseArray[i]._id + '"></div><div class="content" id="'
-                            + responseArray[i]._id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                            + responseArray[i]._id + '"></div></div>');
+                        $('#content_container').append('<div class="item" id="' + item._id
+                            + '"><div class="checkbox" id="' + item._id + '"></div><div class="content" id="'
+                            + item._id + '">' + item.value + '</div><div class="remove_item" id="'
+                            + item._id + '"></div></div>');
                     }
                     else
                     {
-                        $('#content_container').append('<div class="item done" id="' + responseArray[i]._id
-                            + '"><div class="checkbox checked" id="' + responseArray[i]._id + '"></div><div class="content" id="'
-                            + responseArray[i]._id + '">' + responseArray[i].value + '</div><div class="remove_item" id="'
-                            + responseArray[i]._id + '"></div></div>');
+                        $('#content_container').append('<div class="item done" id="' + item._id
+                            + '"><div class="checkbox checked" id="' + item._id + '"></div><div class="content" id="'
+                            + item._id + '">' + item.value + '</div><div class="remove_item" id="'
+                            + item._id + '"></div></div>');
                     }
-                }
+                });
             }
             navigation();
             stats();
         }
-        // "SHOW"
-        function show ()
-        {
-            switch (whatToShow)
-            {
-                case 0:
-                    link = "tasks?page=" + String(selectedPage);
-                    showAll();
-                    break;
-                case 1:
-                    link = "tasks?status=pending&page=" + String(selectedPage);
-                    showPending();
-                    break;
-                case 2:
-                    link = "tasks?status=completed&page=" + String(selectedPage);
-                    showCompleted();
-                    break;
-                default:
-                    link = "tasks?page=" + String(selectedPage);
-                    showAll();
-            }
-        }
 
 
 
-        // "CHANGE STATUS" FUNCTION // todo
+        // "CHANGE STATUS" FUNCTION
         function changeStatus ()
         {
             var newState = "";
@@ -222,14 +120,10 @@ $(document).ready(
                     if (item.state === "pending")
                     {
                         newState = "completed";
-                        pend--;
-                        done++;
                     }
                     else
                     {
                         newState = "pending";
-                        pend++;
-                        done--;
                     }
                 }
             });
@@ -281,28 +175,12 @@ $(document).ready(
         // "REMOVE ITEM" FUNCTION
         function killItem ()
         {
-            var delState = "";
             // get ID of the selected item
             var selectedID = String($(this).attr('id'));
-            responseArray.forEach(function (item)
-            {
-                if (item._id === selectedID)
-                {
-                    if (item.state === "pending")
-                    {
-                        pend--;
-                    }
-                    if (item.state === "completed")
-                    {
-                        done--;
-                    }
-                }
-            });
             // update database
             $.ajax({
                 url     : "tasks/delete/" + String(selectedID),
-                method  : "DELETE",
-                data    : { state: delState }
+                method  : "DELETE"
             }).then(function(res)
             {
                 console.log("res", res);
@@ -344,8 +222,6 @@ $(document).ready(
                 }).then(function (res)
                 {
                     console.log("res", res);
-                    pend++;
-                    // redraw
                     show();
                 });
                 $('#item_value').val("").focus();
@@ -407,9 +283,10 @@ $(document).ready(
             whatToShow = 0;
             // select page 1
             selectedPage = 1;
-            // form link
-            link = "tasks?page=1";
             show();
+            $('#showAll').addClass('control_selected');
+            $('#showPending').removeClass('control_selected');
+            $('#showCompleted').removeClass('control_selected');
         }
 
         start();
@@ -434,9 +311,10 @@ $(document).ready(
             whatToShow = 0;
             // select page 1
             selectedPage = 1;
-            // form link
-            link = "tasks?page=1";
-            showAll();
+            show();
+            $('#showAll').addClass('control_selected');
+            $('#showPending').removeClass('control_selected');
+            $('#showCompleted').removeClass('control_selected');
         });
 
         // "SHOW PENDING" CLiCK
@@ -446,9 +324,10 @@ $(document).ready(
             whatToShow = 1;
             // select page 1
             selectedPage = 1;
-            // form link
-            link = "tasks?page=1&status=pending";
-            showPending();
+            show();
+            $('#showAll').removeClass('control_selected');
+            $('#showPending').addClass('control_selected');
+            $('#showCompleted').removeClass('control_selected');
         });
 
         // "SHOW COMPLETED" CLiCK
@@ -458,9 +337,10 @@ $(document).ready(
             whatToShow = 2;
             // select page 1
             selectedPage = 1;
-            // form link
-            link = "tasks?page=1&status=completed";
-            showCompleted();
+            show();
+            $('#showAll').removeClass('control_selected');
+            $('#showPending').removeClass('control_selected');
+            $('#showCompleted').addClass('control_selected');
         });
 
         // clear all items (entries)
