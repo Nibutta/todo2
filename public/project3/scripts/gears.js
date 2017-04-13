@@ -29,7 +29,7 @@ $(document).ready(
         }
 
 
-        // "SHOW"
+        // "SHOW": get items from DB and draw them on html
         function show ()
         {
             // form link
@@ -108,7 +108,7 @@ $(document).ready(
         {
             var newState = "";
             // get ID of the selected item
-            var selectedID = String($(this).attr('id'));
+            var selectedID = $(this).attr('id');
             responseArray.forEach(function (item)
             {
                 if (item._id === selectedID)
@@ -125,7 +125,7 @@ $(document).ready(
             });
             // update database
             $.ajax({
-                url     : "tasks/check/" + String(selectedID),
+                url     : "tasks/check/" + selectedID,
                 method  : "PUT",
                 data    : { state: newState }
             }).then(function(res)
@@ -155,13 +155,13 @@ $(document).ready(
                 if ($(this).val() !== "")
                 {
                     //get ID of the selected item
-                    var selectedID = String($(this).parent('div').attr('id'));
+                    var selectedID = $(this).parent('div').attr('id');
                     // changing html
                     $(this).replaceWith($('<div class="content" id="' + selectedID + '">' + $(this).val() + '</div>'));
                     newValue = $(this).val();
                     // update database
                     $.ajax({
-                        url     : "tasks/edit/" + String(selectedID),
+                        url     : "tasks/edit/" + selectedID,
                         method  : "PUT",
                         data    : { value: newValue }
                     }).then(function(res)
@@ -178,10 +178,10 @@ $(document).ready(
         function killItem ()
         {
             // get ID of the selected item
-            var selectedID = String($(this).attr('id'));
+            var selectedID = $(this).attr('id');
             // update database
             $.ajax({
-                url     : "tasks/delete/" + String(selectedID),
+                url     : "tasks/delete/" + selectedID,
                 method  : "DELETE"
             }).then(function(res)
             {

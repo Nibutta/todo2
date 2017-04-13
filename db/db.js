@@ -6,3 +6,5 @@ mongoose.connect('mongodb://localhost/data', function ()
 {
     console.log('-->       DATABASE LOADED...');
 });
+
+var models = require('./models');

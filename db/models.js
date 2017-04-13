@@ -8,6 +8,6 @@ var itemSchema = mongoose.Schema({
 
 // model
 var itemModel = mongoose.model('itemModel', itemSchema);
-console.log('-->          MODEL LOADED...');
+console.log('-->         MODELS LOADED...');
 
 module.exports = { itemModel: itemModel };

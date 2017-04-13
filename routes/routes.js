@@ -3,14 +3,14 @@ var mongoose = require('mongoose');
 var taskRouter = express.Router();
 console.log('-->         ROUTES LOADED...');
 
-var model = require('../db/models');
+var model = require('mongoose').model('itemModel');
 
 function getStats(callback)
 {
-    model.itemModel.find({state: "pending"}).count(function (err, sPend)
+    model.find({state: "pending"}).count(function (err, sPend)
     {
         console.log("-->         RECOUNT PENDING: ", sPend);
-        model.itemModel.find({state: "completed"}).count(function (err, sDone)
+        model.find({state: "completed"}).count(function (err, sDone)
         {
             callback({sPend: sPend, sDone: sDone});
 
@@ -74,7 +74,7 @@ taskRouter.get('/', function(req, res, next)
     // get the number of items in db
     getStats(function(stats)
     {
-        model.itemModel.find(whatToSend)
+        model.find(whatToSend)
             .limit(itemsPerPage)
             .skip(startpoint)
             .sort({date: -1})
@@ -101,7 +101,7 @@ taskRouter.get('/', function(req, res, next)
 // CREATE NEW ITEM
 taskRouter.post('/create', function(req, res, next)
 {
-    model.itemModel.create({ value: req.body.value, state: req.body.state }, function (err, item)
+    model.create({ value: req.body.value, state: req.body.state }, function (err, item)
     {
         if (err) res.send(err);
         res.send(item);
@@ -113,7 +113,7 @@ taskRouter.post('/create', function(req, res, next)
 // CHANGE ITEM STATUS
 taskRouter.put('/check/:id', function(req, res, next)
 {
-    model.itemModel.findOneAndUpdate({_id: req.params.id}, {state: req.body.state}, {new: true}, function(err, item)
+    model.findOneAndUpdate({_id: req.params.id}, {state: req.body.state}, {new: true}, function(err, item)
     {
         if (err) res.send(err);
         res.send(item);
@@ -125,7 +125,7 @@ taskRouter.put('/check/:id', function(req, res, next)
 // EDIT ITEM
 taskRouter.put('/edit/:id', function(req, res, next)
 {
-    model.itemModel.findOneAndUpdate({_id: req.params.id}, {value: req.body.value}, {new: true}, function(err, item)
+    model.findOneAndUpdate({_id: req.params.id}, {value: req.body.value}, {new: true}, function(err, item)
     {
         if (err) res.send(err);
         res.send(item);
@@ -137,7 +137,7 @@ taskRouter.put('/edit/:id', function(req, res, next)
 // DELETE ITEM
 taskRouter.delete('/delete/:id', function(req, res, next)
 {
-    model.itemModel.remove({_id: req.params.id}, function(err, del_item)
+    model.remove({_id: req.params.id}, function(err, del_item)
     {
         if (err) res.send(err);
         res.send(del_item);
@@ -148,7 +148,7 @@ taskRouter.delete('/delete/:id', function(req, res, next)
 // CLEAR DATABASE
 taskRouter.get('/clear', function(req, res, next)
 {
-    model.itemModel.remove({}, function (err, items)
+    model.remove({}, function (err, items)
     {
         if (err) res.send(err);
         res.send(items);  // send back empty array --- optional
