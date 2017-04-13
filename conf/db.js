@@ -9,7 +9,7 @@ var mongoose = require('mongoose');
 // schema
 var messageSchema = mongoose.Schema({
       value:    String
-    , state:    String });
+    , state:    String});
 
 var itemsPerPage = 5;   // number of items on page
 var selectedPage = 1;   // selected page

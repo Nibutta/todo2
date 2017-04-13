@@ -28,7 +28,6 @@ $(document).ready(
         }
 
 
-
         // "SHOW"
         function show ()
         {
@@ -67,44 +66,38 @@ $(document).ready(
                     selectedPage--;
                     show();
                 }
-                draw();
+                // clear html
+                $('#content_container').html("");
+                // draw
+                if (responseArray.length === 0)
+                {
+                    $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
+                }
+                else
+                {
+                    // show itemsPerPage items on a page, depending on the selected page
+                    responseArray.forEach(function (item)
+                    {
+                        if (item.state === "pending")
+                        {
+                            $('#content_container').append('<div class="item" id="' + item._id
+                                + '"><div class="checkbox" id="' + item._id + '"></div><div class="content" id="'
+                                + item._id + '">' + item.value + '</div><div class="remove_item" id="'
+                                + item._id + '"></div></div>');
+                        }
+                        else
+                        {
+                            $('#content_container').append('<div class="item done" id="' + item._id
+                                + '"><div class="checkbox checked" id="' + item._id + '"></div><div class="content" id="'
+                                + item._id + '">' + item.value + '</div><div class="remove_item" id="'
+                                + item._id + '"></div></div>');
+                        }
+                    });
+                }
+                navigation();
+                stats();
             });
         }
-        // "DRAW" FUNCTION: DRAW ITEMS ON HTML
-        function draw ()
-        {
-            // clear html
-            $('#content_container').html("");
-            // show
-            if (responseArray.length === 0)
-            {
-                $('#content_container').html('<div class="message"><div class="mt">Nothing to show...</div></div>');
-            }
-            else
-            {
-                // show itemsPerPage items on a page, depending on the selected page
-                responseArray.forEach(function (item)
-                {
-                    if (item.state === "pending")
-                    {
-                        $('#content_container').append('<div class="item" id="' + item._id
-                            + '"><div class="checkbox" id="' + item._id + '"></div><div class="content" id="'
-                            + item._id + '">' + item.value + '</div><div class="remove_item" id="'
-                            + item._id + '"></div></div>');
-                    }
-                    else
-                    {
-                        $('#content_container').append('<div class="item done" id="' + item._id
-                            + '"><div class="checkbox checked" id="' + item._id + '"></div><div class="content" id="'
-                            + item._id + '">' + item.value + '</div><div class="remove_item" id="'
-                            + item._id + '"></div></div>');
-                    }
-                });
-            }
-            navigation();
-            stats();
-        }
-
 
 
         // "CHANGE STATUS" FUNCTION
@@ -138,6 +131,8 @@ $(document).ready(
                 show();
             });
         }
+
+
         // "EDIT ITEM" FUNCTION
         function editValue ()
         {
@@ -145,6 +140,8 @@ $(document).ready(
             $(this).replaceWith($el);
             $el.val(thisData).focus();
         }
+
+
         // "APPLY NEW VALUE" FUNCTION, WORKS WHILE "EDIT ITEM" IS ACTIVE
         function applyValue (e)
         {
@@ -172,6 +169,8 @@ $(document).ready(
                 }
             }
         }
+
+
         // "REMOVE ITEM" FUNCTION
         function killItem ()
         {
@@ -187,6 +186,8 @@ $(document).ready(
             });
             show();
         }
+
+
         // "CLEAR ALL" FUNCTION
         function clearAll ()
         {
@@ -200,11 +201,9 @@ $(document).ready(
                 selectedPage = 1;
                 // clear array
                 responseArray = [];
-                // redraw
                 show();
             });
         }
-
 
 
         // "ADD ITEM" FUNCTION
@@ -229,15 +228,6 @@ $(document).ready(
         }
 
 
-
-        // "PAGINATION" FUNCTION (PAGE NUMBER CLICK)
-        function pagination ()
-        {
-            // get ID of the selected page
-            selectedPage = $(this).attr('id');
-
-            show();
-        }
         // "NAVIGATION" FUNCTION (SHOWS NAVIGATION PANEL)
         function navigation ()
         {
@@ -347,7 +337,12 @@ $(document).ready(
         $('#clearButton').click(clearAll);
 
         // page number click
-        $('#navigation_block').on('click', '.pageN', pagination);
+        $('#navigation_block').on('click', '.pageN', function ()
+        {
+            // get ID of the selected page
+            selectedPage = $(this).attr('id');
+            show();
+        });
 
         // state change
         $('#content_container').on('click', '.item > .checkbox', changeStatus);
