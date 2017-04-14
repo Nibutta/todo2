@@ -287,7 +287,14 @@ $(document).ready(
         // BUTTONS / INTERACTIONS
         //*****************************************************************************************
         // add item to the list
-        $('#form__add').on('submit', addItem);
+        //$('#form__add').on('submit', addItem); FOR THE FORM
+        $('#addButton').click(addItem);
+        $('#item_value').on('keydown', function(e) {
+            if (e.keyCode === 13)
+            {
+                addItem();
+            }
+        });
 
         // "SHOW ALL" CLiCK
         $('#showAll').click(function ()
